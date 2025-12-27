@@ -34,19 +34,19 @@ async function init() {
 
   // Перевіряємо electronAPI
   if (!window.electronAPI) {
-    console.error('❌ electronAPI не знайдено!')
+    console.error('electronAPI не знайдено!')
     alert('Помилка: electronAPI не доступний. Перезапустіть додаток.')
     return
   }
 
-  console.log('✅ electronAPI доступний:', Object.keys(window.electronAPI))
+  console.log('electronAPI доступний:', Object.keys(window.electronAPI))
 
   // Завантажуємо конфігурацію
   try {
     const result = await window.electronAPI.loadConfig()
 
     if (result.success) {
-      console.log('✅ Конфігурація завантажена:', result.config)
+      console.log('Конфігурація завантажена:', result.config)
 
       // Заповнюємо поля з .env
       document.getElementById('support-emails').value = result.config.supportEmails
@@ -57,13 +57,19 @@ async function init() {
       document.getElementById('jira-email').value = result.config.jiraEmail
       document.getElementById('jira-project').value = result.config.jiraProject
     } else {
-      console.warn('⚠️ Помилка завантаження конфігурації:', result.error)
+      console.warn('Помилка завантаження конфігурації:', result.error)
     }
   } catch (error) {
-    console.error('❌ Помилка ініціалізації:', error)
+    console.error('Помилка ініціалізації:', error)
   }
 
   setupEventListeners()
+
+  // Прогрес Jira
+  window.electronAPI.onJiraProgress(data => {
+    console.log(`Jira прогрес: ${data.current}/${data.total}`)
+    updateJiraProgress(data)
+  })
 }
 
 // ============================================
@@ -91,12 +97,6 @@ function setupEventListeners() {
   // Експорт
   exportCsvBtn.addEventListener('click', exportToCSV)
   exportJiraBtn.addEventListener('click', exportToJira)
-
-  // Прогрес Jira
-  window.electronAPI.onJiraProgress(data => {
-    console.log(`Jira прогрес: ${data.current}/${data.total}`)
-    updateJiraProgress(data)
-  })
 }
 
 // ============================================
@@ -134,10 +134,10 @@ async function selectPSTFile() {
     if (result.success) {
       document.getElementById('pst-path').value = result.path
       parseBtn.disabled = false
-      console.log('✅ PST файл обрано:', result.path)
+      console.log('PST файл обрано:', result.path)
     }
   } catch (error) {
-    console.error('❌ Помилка вибору PST:', error)
+    console.error('Помилка вибору PST:', error)
     alert('Помилка вибору файлу: ' + error.message)
   }
 }
@@ -152,7 +152,7 @@ async function connectIMAP() {
 
   try {
     btn.disabled = true
-    btn.textContent = '⏳ Підключення...'
+    btn.textContent = 'Підключення...'
 
     const config = {
       user: document.getElementById('imap-user').value,
@@ -169,7 +169,7 @@ async function connectIMAP() {
     const result = await window.electronAPI.connectIMAP(config)
 
     if (result.success) {
-      console.log('✅ IMAP підключено. Папки:', result.folders)
+      console.log('IMAP підключено. Папки:', result.folders)
 
       // Заповнюємо список папок
       const folderSelect = document.getElementById('imap-folder')
@@ -183,12 +183,12 @@ async function connectIMAP() {
       })
 
       parseBtn.disabled = false
-      alert('✅ Успішно підключено до Outlook!\n\nЗнайдено папок: ' + result.folders.length)
+      alert('Успішно підключено до Outlook!\n\nЗнайдено папок: ' + result.folders.length)
     } else {
-      alert('❌ Помилка підключення:\n\n' + result.error)
+      alert('Помилка підключення:\n\n' + result.error)
     }
   } catch (error) {
-    console.error('❌ Помилка IMAP:', error)
+    console.error('Помилка IMAP:', error)
     alert('Помилка: ' + error.message)
   } finally {
     btn.disabled = false
@@ -206,7 +206,7 @@ async function connectJira() {
 
   try {
     btn.disabled = true
-    btn.textContent = '⏳ Підключення...'
+    btn.textContent = 'Підключення...'
 
     const config = {
       host: document.getElementById('jira-host').value,
@@ -223,14 +223,14 @@ async function connectJira() {
     const result = await window.electronAPI.connectJira(config)
 
     if (result.success) {
-      console.log('✅ Jira підключено:', result)
+      console.log('Jira підключено:', result)
       parseBtn.disabled = false
-      alert(`✅ Успішно підключено до Jira!\n\nКористувач: ${result.user.displayName}\nПроект: ${result.project}`)
+      alert(`Успішно підключено до Jira!\n\nКористувач: ${result.user.displayName}\nПроект: ${result.project}`)
     } else {
-      alert('❌ Помилка підключення:\n\n' + result.error)
+      alert('Помилка підключення:\n\n' + result.error)
     }
   } catch (error) {
-    console.error('❌ Помилка Jira:', error)
+    console.error('Помилка Jira:', error)
     alert('Помилка: ' + error.message)
   } finally {
     btn.disabled = false
@@ -244,6 +244,7 @@ async function connectJira() {
 
 async function startParsing() {
   try {
+    console.log('DEBUG: Початок парсингу, джерело:', selectedSource)
     loading.style.display = 'block'
     resultSection.style.display = 'none'
     previewSection.style.display = 'none'
@@ -252,26 +253,39 @@ async function startParsing() {
     let result
 
     if (selectedSource === 'pst') {
+      console.log('DEBUG: Викликаємо parsePST()')
       result = await parsePST()
     } else if (selectedSource === 'imap') {
+      console.log('DEBUG: Викликаємо parseIMAP()')
       result = await parseIMAP()
     } else if (selectedSource === 'jira') {
+      console.log('DEBUG: Викликаємо parseJira()')
       result = await parseJira()
     }
+
+    console.log('DEBUG: Отримано результат від backend:')
+    console.log('  - Success:', result.success)
+    console.log('  - Data length:', result.data ? result.data.length : 0)
+    console.log('  - Stats:', result.stats)
+    console.log('  - Error:', result.error)
 
     loading.style.display = 'none'
     parseBtn.disabled = false
 
     if (result.success) {
+      console.log('DEBUG: Результат успішний, зберігаємо parsedData')
       parsedData = result.data
+      console.log('DEBUG: parsedData збережено, кількість:', parsedData.length)
       displayResults(result)
     } else {
+      console.error('DEBUG: Результат містить помилку:', result.error)
       showError(result.error)
     }
   } catch (error) {
     loading.style.display = 'none'
     parseBtn.disabled = false
-    console.error('❌ Помилка парсингу:', error)
+    console.error('Помилка парсингу:', error)
+    console.error('DEBUG: Stack trace:', error.stack)
     showError(error.message)
   }
 }
@@ -286,11 +300,24 @@ async function parsePST() {
     batchSize: 100,
   }
 
+  console.log('DEBUG: Опції для PST парсингу:', {
+    pstPath: options.pstPath,
+    supportEmails: options.supportEmails,
+    keywords: options.keywords,
+    startDate: options.startDate,
+    endDate: options.endDate,
+    batchSize: options.batchSize,
+  })
+
   if (!options.pstPath) {
     throw new Error('Оберіть PST файл')
   }
 
-  return await window.electronAPI.parsePST(options)
+  console.log('DEBUG: Викликаємо electronAPI.parsePST...')
+  const result = await window.electronAPI.parsePST(options)
+  console.log('DEBUG: Отримано відповідь від parsePST:', result)
+
+  return result
 }
 
 async function parseIMAP() {
@@ -336,12 +363,19 @@ async function parseJira() {
 // ============================================
 
 function displayResults(result) {
+  console.log('DEBUG: displayResults викликано з даними:', {
+    dataLength: result.data ? result.data.length : 0,
+    stats: result.stats,
+  })
+
   const stats = result.stats
+
+  console.log('DEBUG: Статистика для відображення:', stats)
 
   resultSection.style.display = 'block'
   resultInfo.innerHTML = `
     <div class="success-message">
-      <strong>✅ Парсинг завершено!</strong><br><br>
+      <strong>Парсинг завершено!</strong><br><br>
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-label">Threads:</div>
@@ -368,13 +402,21 @@ function displayResults(result) {
   `
 
   previewSection.style.display = 'block'
+  console.log('DEBUG: Викликаємо displayTable з', result.data.length, 'записами')
   displayTable(result.data)
 }
 
 function displayTable(issues) {
+  console.log('DEBUG: displayTable викликано, issues:', issues.length)
+  console.log('DEBUG: Перше issue:', issues[0])
+
   previewBody.innerHTML = ''
 
   issues.forEach((issue, index) => {
+    if (index < 3) {
+      console.log(`DEBUG: Issue #${index}:`, issue)
+    }
+
     const row = document.createElement('tr')
     row.innerHTML = `
       <td>${issue.dateRegistered}</td>
@@ -389,13 +431,15 @@ function displayTable(issues) {
     `
     previewBody.appendChild(row)
   })
+
+  console.log('DEBUG: Таблиця відображена, рядків:', issues.length)
 }
 
 function showError(error) {
   resultSection.style.display = 'block'
   resultInfo.innerHTML = `
     <div class="error-message">
-      <strong>❌ Помилка:</strong><br>
+      <strong>Помилка:</strong><br>
       ${error}
     </div>
   `
@@ -413,21 +457,21 @@ async function exportToCSV() {
 
   try {
     exportCsvBtn.disabled = true
-    exportCsvBtn.textContent = '⏳ Експорт...'
+    exportCsvBtn.textContent = 'Експорт...'
 
     const result = await window.electronAPI.exportCSV(parsedData)
 
     if (result.success) {
-      alert(`✅ CSV файл створено!\n\n${result.csvPath}`)
+      alert(`CSV файл створено!\n\n${result.csvPath}`)
     } else {
-      alert('❌ Помилка експорту: ' + result.error)
+      alert('Помилка експорту: ' + result.error)
     }
   } catch (error) {
-    console.error('❌ Помилка експорту CSV:', error)
+    console.error('Помилка експорту CSV:', error)
     alert('Помилка: ' + error.message)
   } finally {
     exportCsvBtn.disabled = false
-    exportCsvBtn.textContent = '📥 Експорт в CSV'
+    exportCsvBtn.textContent = 'Експорт в CSV'
   }
 }
 
@@ -443,7 +487,7 @@ async function exportToJira() {
 
   try {
     exportJiraBtn.disabled = true
-    exportJiraBtn.textContent = '⏳ Створення...'
+    exportJiraBtn.textContent = 'Створення...'
 
     const options = {
       host: document.getElementById('jira-host').value,
@@ -456,16 +500,16 @@ async function exportToJira() {
     const result = await window.electronAPI.exportToJira(options)
 
     if (result.success) {
-      alert(`✅ Експорт завершено!\n\nСтворено: ${result.created}\nПомилок: ${result.failed}`)
+      alert(`Експорт завершено!\n\nСтворено: ${result.created}\nПомилок: ${result.failed}`)
     } else {
-      alert('❌ Помилка експорту: ' + result.error)
+      alert('Помилка експорту: ' + result.error)
     }
   } catch (error) {
-    console.error('❌ Помилка експорту Jira:', error)
+    console.error('Помилка експорту Jira:', error)
     alert('Помилка: ' + error.message)
   } finally {
     exportJiraBtn.disabled = false
-    exportJiraBtn.textContent = '📤 Експорт в Jira'
+    exportJiraBtn.textContent = 'Експорт в Jira'
   }
 }
 

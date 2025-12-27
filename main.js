@@ -67,23 +67,42 @@ ipcMain.handle('select-pst-file', async () => {
 
 ipcMain.handle('parse-pst', async (event, options) => {
   try {
-    console.log('🔄 Початок парсингу PST файлу...')
+    console.log('Starting PST file parsing...')
+    console.log('DEBUG: Parse options:', JSON.stringify({
+      pstPath: options.pstPath,
+      supportEmails: options.supportEmails,
+      keywords: options.keywords,
+      startDate: options.startDate,
+      endDate: options.endDate,
+      batchSize: options.batchSize || 100,
+    }, null, 2))
 
     const pstParser = new PSTParser(options.pstPath)
+    console.log('DEBUG: PSTParser created')
+
     const messages = await pstParser.extractMessages({
       startDate: options.startDate,
       endDate: options.endDate,
       batchSize: options.batchSize || 100,
     })
 
-    console.log(`📧 Отримано ${messages.length} повідомлень`)
+    console.log(`Received ${messages.length} messages`)
+    console.log('DEBUG: First message (if any):', messages.length > 0 ? JSON.stringify(messages[0], null, 2) : 'No messages')
+    console.log('DEBUG: Last message (if any):', messages.length > 1 ? JSON.stringify(messages[messages.length - 1], null, 2) : 'Only one or none')
 
     const reportGenerator = new ReportGenerator({
       supportEmails: options.supportEmails,
       keywords: options.keywords,
     })
+    console.log('DEBUG: ReportGenerator created')
 
+    console.log('DEBUG: Starting message processing...')
     const { issues, stats } = reportGenerator.processMessages(messages)
+
+    console.log('DEBUG: Processing result:')
+    console.log('  - Found issues:', issues.length)
+    console.log('  - Statistics:', JSON.stringify(stats, null, 2))
+    console.log('DEBUG: First issue (if any):', issues.length > 0 ? JSON.stringify(issues[0], null, 2) : 'No issues')
 
     return {
       success: true,
@@ -91,7 +110,8 @@ ipcMain.handle('parse-pst', async (event, options) => {
       stats,
     }
   } catch (error) {
-    console.error('❌ Помилка парсингу PST:', error)
+    console.error('PST parsing error:', error)
+    console.error('DEBUG: Stack trace:', error.stack)
     return {
       success: false,
       error: error.message,
@@ -105,7 +125,7 @@ ipcMain.handle('parse-pst', async (event, options) => {
 
 ipcMain.handle('connect-imap', async (event, config) => {
   try {
-    console.log('🔄 Підключення до IMAP...')
+    console.log('Connecting to IMAP...')
 
     const imapParser = new ImapParser({
       user: config.user || process.env.OUTLOOK_IMAP_USER,
@@ -123,7 +143,7 @@ ipcMain.handle('connect-imap', async (event, config) => {
       folders: folders.map(f => f.name),
     }
   } catch (error) {
-    console.error('❌ Помилка IMAP:', error)
+    console.error('IMAP error:', error)
     return {
       success: false,
       error: error.message,
@@ -135,7 +155,7 @@ ipcMain.handle('parse-imap', async (event, options) => {
   let imapParser = null
 
   try {
-    console.log('🔄 Завантаження листів через IMAP...')
+    console.log('Loading emails via IMAP...')
 
     imapParser = new ImapParser({
       user: options.user || process.env.OUTLOOK_IMAP_USER,
@@ -154,7 +174,7 @@ ipcMain.handle('parse-imap', async (event, options) => {
 
     await imapParser.disconnect()
 
-    console.log(`📧 Отримано ${messages.length} повідомлень`)
+    console.log(`Received ${messages.length} messages`)
 
     const reportGenerator = new ReportGenerator({
       supportEmails: options.supportEmails,
@@ -169,7 +189,7 @@ ipcMain.handle('parse-imap', async (event, options) => {
       stats,
     }
   } catch (error) {
-    console.error('❌ Помилка IMAP парсингу:', error)
+    console.error('IMAP parsing error:', error)
     if (imapParser) await imapParser.disconnect()
     return {
       success: false,
@@ -184,7 +204,7 @@ ipcMain.handle('parse-imap', async (event, options) => {
 
 ipcMain.handle('connect-jira', async (event, config) => {
   try {
-    console.log('🔄 Підключення до Jira...')
+    console.log('Connecting to Jira...')
 
     const jiraClient = new JiraClient({
       host: config.host || process.env.JIRA_HOST,
@@ -206,7 +226,7 @@ ipcMain.handle('connect-jira', async (event, config) => {
 
     return result
   } catch (error) {
-    console.error('❌ Помилка Jira:', error)
+    console.error('Jira error:', error)
     return {
       success: false,
       error: error.message,
@@ -216,7 +236,7 @@ ipcMain.handle('connect-jira', async (event, config) => {
 
 ipcMain.handle('fetch-jira-issues', async (event, options) => {
   try {
-    console.log('🔄 Завантаження задач з Jira...')
+    console.log('Loading issues from Jira...')
 
     const jiraClient = new JiraClient({
       host: options.host || process.env.JIRA_HOST,
@@ -231,7 +251,7 @@ ipcMain.handle('fetch-jira-issues', async (event, options) => {
       statuses: ['Assigned', 'In Progress', 'Completed'],
     })
 
-    console.log(`📋 Отримано ${jiraIssues.length} задач`)
+    console.log(`Received ${jiraIssues.length} issues`)
 
     const reportGenerator = new ReportGenerator({
       supportEmails: options.supportEmails,
@@ -245,7 +265,7 @@ ipcMain.handle('fetch-jira-issues', async (event, options) => {
       stats,
     }
   } catch (error) {
-    console.error('❌ Помилка завантаження Jira:', error)
+    console.error('Jira loading error:', error)
     return {
       success: false,
       error: error.message,
@@ -255,7 +275,7 @@ ipcMain.handle('fetch-jira-issues', async (event, options) => {
 
 ipcMain.handle('export-to-jira', async (event, options) => {
   try {
-    console.log('🔄 Експорт в Jira...')
+    console.log('Exporting to Jira...')
 
     const jiraClient = new JiraClient({
       host: options.host || process.env.JIRA_HOST,
@@ -279,7 +299,7 @@ ipcMain.handle('export-to-jira', async (event, options) => {
       failed: results.filter(r => !r.success).length,
     }
   } catch (error) {
-    console.error('❌ Помилка експорту в Jira:', error)
+    console.error('Jira export error:', error)
     return {
       success: false,
       error: error.message,
@@ -301,7 +321,7 @@ ipcMain.handle('export-csv', async (event, issues) => {
       csvPath,
     }
   } catch (error) {
-    console.error('❌ Помилка експорту CSV:', error)
+    console.error('CSV export error:', error)
     return {
       success: false,
       error: error.message,

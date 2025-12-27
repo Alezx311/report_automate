@@ -18,10 +18,10 @@ class JiraClient {
   async testConnection() {
     try {
       const user = await this.jira.getCurrentUser()
-      console.log('✅ Jira підключено:', user.displayName)
+      console.log('Jira connected:', user.displayName)
       return { success: true, user }
     } catch (error) {
-      console.error('❌ Помилка підключення до Jira:', error.message)
+      console.error('Jira connection error:', error.message)
       return { success: false, error: error.message }
     }
   }
@@ -31,7 +31,7 @@ class JiraClient {
       const project = await this.jira.getProject(this.projectKey)
       return project
     } catch (error) {
-      console.error('❌ Помилка отримання проекту:', error.message)
+      console.error('Project retrieval error:', error.message)
       return null
     }
   }
@@ -60,7 +60,7 @@ class JiraClient {
 
       jql += ` ORDER BY created DESC`
 
-      console.log('🔍 JQL запит:', jql)
+      console.log('JQL query:', jql)
 
       const searchResults = await this.jira.searchJira(jql, {
         maxResults: 1000,
@@ -77,7 +77,7 @@ class JiraClient {
         ],
       })
 
-      console.log(`✅ Знайдено ${searchResults.issues.length} задач`)
+      console.log(`Found ${searchResults.issues.length} issues`)
 
       // Отримуємо історію переходів для кожної задачі
       const issuesWithHistory = []
@@ -100,13 +100,13 @@ class JiraClient {
             statusHistory: this._extractStatusHistory(changelog),
           })
         } catch (err) {
-          console.error(`⚠️ Помилка отримання історії для ${issue.key}:`, err.message)
+          console.error(`History retrieval error for ${issue.key}:`, err.message)
           issuesWithHistory.push({
             key: issue.key,
             summary: issue.fields.summary,
             description: issue.fields.description || '',
             status: issue.fields.status.name,
-            assignee: issue.fields.assignee?.displayName || 'Не призначено',
+            assignee: issue.fields.assignee?.displayName || 'Unassigned',
             created: issue.fields.created,
             statusHistory: [],
           })
@@ -115,7 +115,7 @@ class JiraClient {
 
       return issuesWithHistory
     } catch (error) {
-      console.error('❌ Помилка завантаження задач:', error.message)
+      console.error('Issues loading error:', error.message)
       throw error
     }
   }
@@ -144,9 +144,9 @@ class JiraClient {
       }
 
       const result = await this.jira.addNewIssue(issue)
-      console.log(`✅ Створено Jira issue: ${result.key}`)
+      console.log(`Created Jira issue: ${result.key}`)
 
-      // Якщо статус "Вирішено", переводимо в Completed
+      // If status is "Resolved", transition to Completed
       if (issueData.status === 'Вирішено') {
         await this.transitionIssue(result.key, 'Completed')
       }
@@ -157,7 +157,7 @@ class JiraClient {
         issueUrl: `${this.config.host}/browse/${result.key}`,
       }
     } catch (error) {
-      console.error('❌ Помилка створення issue:', error.message)
+      console.error('Issue creation error:', error.message)
       return { success: false, error: error.message }
     }
   }
@@ -191,7 +191,7 @@ class JiraClient {
       const transition = transitions.transitions.find(t => t.to.name.toLowerCase() === toStatus.toLowerCase())
 
       if (!transition) {
-        console.error(`⚠️ Не знайдено перехід до статусу "${toStatus}"`)
+        console.error(`Transition to status "${toStatus}" not found`)
         return false
       }
 
@@ -199,10 +199,10 @@ class JiraClient {
         transition: { id: transition.id },
       })
 
-      console.log(`✅ ${issueKey} -> ${toStatus}`)
+      console.log(`${issueKey} -> ${toStatus}`)
       return true
     } catch (error) {
-      console.error(`❌ Помилка переходу ${issueKey}:`, error.message)
+      console.error(`Transition error for ${issueKey}:`, error.message)
       return false
     }
   }
@@ -215,7 +215,7 @@ class JiraClient {
       })
       return users.length > 0 ? users[0] : null
     } catch (error) {
-      console.error('⚠️ Помилка пошуку користувача:', error.message)
+      console.error('User search error:', error.message)
       return null
     }
   }

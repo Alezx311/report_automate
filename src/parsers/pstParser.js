@@ -8,19 +8,19 @@ class PSTParser {
   }
 
   async extractMessages(options = {}) {
-    const { startDate, endDate, batchSize = 100 } = options
+    const { startDate, endDate } = options
 
-    // Перевірка розміру файлу
+    // File size check
     const stats = fs.statSync(this.pstPath)
     const fileSizeGB = stats.size / (1024 * 1024 * 1024)
 
     if (fileSizeGB > 2) {
-      throw new Error('Файл завеликий (>2GB). Розділіть PST в Outlook.')
+      throw new Error('File too large (>2GB). Split PST in Outlook.')
     }
 
-    console.log(`📂 Читання PST файлу (${fileSizeGB.toFixed(2)} GB)...`)
+    console.log(`Reading PST file (${fileSizeGB.toFixed(2)} GB)...`)
 
-    // Читаємо файл
+    // Read file
     const fileBuffer = fs.readFileSync(this.pstPath)
     const arrayBuffer = fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength)
 
@@ -32,34 +32,58 @@ class PSTParser {
     const startD = startDate ? new Date(startDate) : null
     const endD = endDate ? new Date(endDate + 'T23:59:59') : null
 
-    // Рекурсивна обробка папок
+    // Recursive folder processing
     const processFolder = (folder, depth = 0) => {
       const indent = '  '.repeat(depth)
-      console.log(`${indent}📁 ${folder.displayName}`)
+      console.log(`${indent}Folder: ${folder.displayName}`)
 
       try {
         const messageCount = folder.contentCount || 0
 
         if (messageCount > 0) {
-          console.log(`${indent}  📧 ${messageCount} повідомлень`)
+          console.log(`${indent}  Messages: ${messageCount}`)
 
-          let offset = 0
-          while (offset < messageCount) {
-            try {
-              const entries = folder.getContents(offset, batchSize)
+          let processedInFolder = 0
+          let skippedByDate = 0
+          let skippedByClass = 0
 
-              for (const entry of entries) {
-                try {
-                  const message = folder.getMessage(entry.nid)
+          try {
+            // Read ALL entries at once (getContents with offset doesn't work properly in pst-parser)
+            console.log(`${indent}  Reading all ${messageCount} entries...`)
+            const allEntries = folder.getContents(0, messageCount)
+            console.log(`${indent}  Got ${allEntries.length} entries`)
 
-                  if (message && message.messageClass === 'IPM.Note') {
-                    const date = message.messageDeliveryTime || message.clientSubmitTime || new Date()
+            // Process entries
+            for (const entry of allEntries) {
+              try {
+                const message = folder.getMessage(entry.nid)
 
-                    // Фільтр по датах
-                    if (startD && date < startD) continue
-                    if (endD && date > endD) continue
+                if (message) {
+                  // Accept message if it's IPM.Note OR if messageClass is undefined but has subject/body
+                  const isEmailMessage =
+                    message.messageClass === 'IPM.Note' ||
+                    (message.messageClass === undefined && (message.subject || message.body || message.bodyHTML))
 
-                    messages.push({
+                  if (isEmailMessage) {
+                    // Try to extract date from body text
+                    let date = this.extractDateFromBody(message.body, message.bodyHTML)
+
+                    if (!date) {
+                      // Fallback to current date if extraction failed
+                      date = new Date()
+                    }
+
+                    // Date filter
+                    if (startD && date < startD) {
+                      skippedByDate++
+                      continue
+                    }
+                    if (endD && date > endD) {
+                      skippedByDate++
+                      continue
+                    }
+
+                    const msg = {
                       conversationId: message.conversationTopic || message.subject || 'unknown',
                       subject: message.subject || 'No Subject',
                       senderEmail: message.senderEmailAddress || message.sentRepresentingEmailAddress || '',
@@ -67,22 +91,25 @@ class PSTParser {
                       receivedDateTime: date,
                       body: this.stripHtml(message.body || message.bodyHTML || ''),
                       folderName: folder.displayName,
-                    })
+                    }
+                    messages.push(msg)
+                    processedInFolder++
+                  } else {
+                    skippedByClass++
                   }
-                } catch (msgError) {
-                  console.error(`${indent}  ⚠️ Помилка повідомлення:`, msgError.message)
                 }
+              } catch (msgError) {
+                console.error(`${indent}  Message error:`, msgError.message)
               }
-
-              offset += batchSize
-            } catch (batchError) {
-              console.error(`${indent}  ⚠️ Помилка batch:`, batchError.message)
-              break
             }
+
+            console.log(`${indent}  Processed: ${processedInFolder}, Skipped by date: ${skippedByDate}, Skipped by type: ${skippedByClass}`)
+          } catch (entriesError) {
+            console.error(`${indent}  Error reading entries:`, entriesError.message)
           }
         }
 
-        // Обробка підпапок
+        // Process subfolders
         if (folder.hasSubfolders) {
           const subFolders = folder.getSubFolderEntries()
 
@@ -93,18 +120,18 @@ class PSTParser {
                 processFolder(subFolder, depth + 1)
               }
             } catch (subError) {
-              console.error(`${indent}  ⚠️ Помилка підпапки:`, subError.message)
+              console.error(`${indent}  Subfolder error:`, subError.message)
             }
           }
         }
       } catch (folderError) {
-        console.error(`${indent}⚠️ Помилка папки:`, folderError.message)
+        console.error(`${indent}Folder error:`, folderError.message)
       }
     }
 
     processFolder(rootFolder)
 
-    console.log(`✅ Завершено. Знайдено ${messages.length} повідомлень`)
+    console.log(`Complete. Found ${messages.length} messages`)
 
     return messages
   }
@@ -121,6 +148,46 @@ class PSTParser {
       .replace(/&quot;/g, '"')
       .replace(/\s+/g, ' ')
       .trim()
+  }
+
+  extractDateFromBody(body, bodyHTML) {
+    // Try to extract date from body text
+    const text = body || bodyHTML || ''
+
+    // Try multiple patterns to find the date
+    const patterns = [
+      // Pattern 1: "Sent: Friday, November 29, 2024 2:04 PM"
+      /Sent:\s+\w+,\s+(\w+\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s+(?:AM|PM))/i,
+
+      // Pattern 2: "From:... Sent: November 29, 2024 2:04 PM" (without day of week)
+      /Sent:\s+(\w+\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s+(?:AM|PM))/i,
+
+      // Pattern 3: Look for any date in format "Month DD, YYYY HH:MM AM/PM"
+      /(\w+\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s+(?:AM|PM))/i,
+
+      // Pattern 4: Date in format "DD/MM/YYYY" or "MM/DD/YYYY"
+      /(\d{1,2}\/\d{1,2}\/\d{4})/,
+    ]
+
+    for (const pattern of patterns) {
+      const match = text.match(pattern)
+
+      if (match) {
+        try {
+          const dateStr = match[1]
+          const parsedDate = new Date(dateStr)
+
+          if (!isNaN(parsedDate.getTime())) {
+            return parsedDate
+          }
+        } catch (e) {
+          // Try next pattern
+          continue
+        }
+      }
+    }
+
+    return null
   }
 }
 

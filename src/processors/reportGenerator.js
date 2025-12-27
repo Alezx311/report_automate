@@ -28,16 +28,16 @@ class ReportGenerator {
    * Обробка повідомлень з Email (PST або IMAP)
    */
   processMessages(messages) {
-    console.log(`🔄 Обробка ${messages.length} повідомлень...`)
+    console.log(`Processing ${messages.length} messages...`)
 
-    // Групування в threads
+    // Group into threads
     const threads = this._groupByThread(messages)
-    console.log(`📊 Згруповано в ${Object.keys(threads).length} threads`)
+    console.log(`Grouped into ${Object.keys(threads).length} threads`)
 
     const issues = []
 
     Object.values(threads).forEach(thread => {
-      // Сортуємо за часом
+      // Sort by time
       thread.sort((a, b) => new Date(a.receivedDateTime) - new Date(b.receivedDateTime))
 
       let i = 0
@@ -45,7 +45,7 @@ class ReportGenerator {
         const currentMsg = thread[i]
         const isSupport = this._isFromSupport(currentMsg.senderEmail)
 
-        // Збираємо повідомлення для звернення
+        // Collect messages for issue
         const issueMessages = [currentMsg]
         let j = i + 1
         let foundResponse = false
@@ -64,7 +64,7 @@ class ReportGenerator {
           j++
         }
 
-        // Створюємо звернення
+        // Create issue
         const issue = this._createIssue(issueMessages, isSupport, foundResponse)
         issues.push(issue)
 
@@ -72,10 +72,10 @@ class ReportGenerator {
       }
     })
 
-    // Статистика
+    // Statistics
     const stats = this._calculateStats(issues, Object.keys(threads).length)
 
-    console.log(`✅ Створено ${issues.length} звернень`)
+    console.log(`Created ${issues.length} issues`)
 
     return { issues, stats }
   }
@@ -84,12 +84,12 @@ class ReportGenerator {
    * Обробка задач з Jira
    */
   processJiraIssues(jiraIssues) {
-    console.log(`🔄 Обробка ${jiraIssues.length} Jira задач...`)
+    console.log(`Processing ${jiraIssues.length} Jira issues...`)
 
     const issues = []
 
     for (const jiraIssue of jiraIssues) {
-      // Знаходимо дату переходу в Assigned (початок)
+      // Find Assigned transition date (start)
       const assignedTransition = jiraIssue.statusHistory.find(h => h.to === 'Assigned')
       const completedTransition = jiraIssue.statusHistory.find(h => h.to === 'Completed')
 
@@ -106,7 +106,7 @@ class ReportGenerator {
         description: jiraIssue.description,
         status: this._mapJiraStatus(jiraIssue.status),
         responsible: jiraIssue.assignee,
-        solution: completedTransition ? 'Задача завершена' : '',
+        solution: completedTransition ? 'Task completed' : '',
         dateResolved: endDate ? this._formatDate(endDate) : '',
         timeResolved: endDate ? this._formatTime(endDate) : '',
         importance: this._mapJiraPriority(jiraIssue.priority),
@@ -116,7 +116,7 @@ class ReportGenerator {
 
     const stats = this._calculateStats(issues, jiraIssues.length)
 
-    console.log(`✅ Оброблено ${issues.length} звернень з Jira`)
+    console.log(`Processed ${issues.length} issues from Jira`)
 
     return { issues, stats }
   }
@@ -158,7 +158,7 @@ class ReportGenerator {
 
     await csvWriter.writeRecords(issues)
 
-    console.log(`✅ CSV створено: ${filePath}`)
+    console.log(`CSV created: ${filePath}`)
 
     return filePath
   }
@@ -339,7 +339,7 @@ class ReportGenerator {
       const systemsPath = path.join(__dirname, '../../config/systems.json')
       return JSON.parse(fs.readFileSync(systemsPath, 'utf8'))
     } catch (error) {
-      console.error('⚠️ Помилка завантаження систем:', error.message)
+      console.error('Systems loading error:', error.message)
       return ['ESB', 'IPS', 'FICO']
     }
   }

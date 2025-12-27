@@ -1,0 +1,291 @@
+PS D:\js\report_automate> npm start
+
+> report-automate-pst-email-parser@1.0.0 start
+> electron .
+
+
+[33152:1228/005203.846:ERROR:CONSOLE:1] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[33152:1228/005203.846:ERROR:CONSOLE:1] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+Starting PST file parsing...
+DEBUG: Parse options: {
+  "pstPath": "D:\\js\\report_automate\\_dev\\backup_2025_11.pst",
+  "supportEmails": "",
+  "keywords": "",
+  "startDate": "",
+  "endDate": "",
+  "batchSize": 100
+}
+DEBUG: PSTParser created
+Reading PST file (0.44 GB)...
+Folder: Кореневий рівень файлу даних Outlook
+  Folder: Видалені
+  Folder: OSHB
+    Messages: 1700
+    Reading all 1700 entries...
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+Unable to get data of type 0x1F
+    Got 1700 entries
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Message error: Offset is outside the bounds of the DataView
+    Processed: 1626, Skipped by date: 0, Skipped by type: 0
+Complete. Found 1626 messages
+Received 1626 messages
+DEBUG: First message (if any): {
+  "conversationId": "Запит щодо перезавантаження шини",
+  "subject": "Запит щодо перезавантаження шини",
+  "senderEmail": "",
+  "senderName": "Unknown",
+  "receivedDateTime": "2024-11-20T15:45:00.000Z",
+  "body": "Добрий вечір. Погоджено. ______________ З повагою, Андрій Рудевич Керівник проєктів і програм відділу системного аналізу управління архітектури та системного аналізу департаменту інформатизації вул. Рене Декарта, 5 Київ, 03062, Україна тел.: +380 (66) 058 21 02 тел. внутрішній: 9763 From: Valerii Kempf Sent: Wednesday, November 20, 2024 5:45 PM To: Василішина Галина Миколаївна ; Рудевич Андрій Євгенович Cc: ESB@oschadbank.ua Subject: Fw: Запит щодо перезавантаження шини прошу погодити встановлення шини по ощадбіз, на сьогодні рфц в аттачі Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Гуренко Володимир Володимирович > Sent: Friday, November 15, 2024 12:56 PM To: Oleksiy Sokolov >; Ruslan Kaminskiy > Cc: Dmytro Sandul >; OSHB.ESB.Support >; Valerii Kempf > Subject: RE: Запит щодо перезавантаження шини Доброго дня! Прошу перезавантажити шину. Мною було виявлено розміщення файлу в папці (IN) 065 ТВБВ Києва. Я архів видалив, але не знаю чи потрібно перезавантажувати шину чи вона автоматично відновлює роботу? From: Гуренко Володимир Володимирович Sent: Monday, November 4, 2024 5:29 PM To: 'Oleksiy Sokolov' >; 'Ruslan Kaminskiy' > Cc: 'Dmytro Sandul' >; ESB@oschadbank.ua >; 'Valerii Kempf' > Subject: RE: Запит щодо перезавантаження шини Доброго дня! Прошу перезавантажити шину. Не проходять пакети по заявці 2909 та 2892 (до прикладу). From: Гуренко Володимир Володимирович Sent: Thursday, October 17, 2024 2:43 PM To: 'Valerii Kempf' >; 'Oleksiy Sokolov' >; 'Ruslan Kaminskiy' >; Лесняк Сергій Богданович > Cc: 'Dmytro Sandul' >; ESB@oschadbank.ua > Subject: RE: Запит щодо перезавантаження шини Доброго дня! Прошу перезавантажити шину. Можливо є пакет, який в папці IN? З повагою, Гуренко Володимир Керівник центру стратегічних проектів ММСБ Тел.вн.: 9263 Моб./Viber/Telegram: 097 646 000 4",
+  "folderName": "OSHB"
+}
+DEBUG: Last message (if any): {
+  "conversationId": "додавання тегу в шаблон запиту по Viber повідомленням",
+  "subject": "додавання тегу в шаблон запиту по Viber повідомленням",
+  "senderEmail": "",
+  "senderName": "Unknown",
+  "receivedDateTime": "2025-07-25T07:56:00.000Z",
+  "body": "УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Перевірили, все працює. Повідомлення надходять. Прохання застосувати для проду From: Пашковська Наталія Анатоліївна Sent: Friday, July 25, 2025 10:56 AM To: 'Mykhailo Dmytryshyn' Cc: GR.00.CC.Admin ; Ihor Draha ; ESB@oschadbank.ua ; Oleksiy Sokolov ; Кулаковський Дмитро Віталійович ; Darya Olevska ; Ruslan Kaminskiy ; Василішина Галина Миколаївна ; Mariia Rudynska ; Nikita Chychykalo Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Дуже дякую Зараз спробуємо From: Mykhailo Dmytryshyn [mailto:Mikhail_Dmitrishin@service-team.biz] Sent: Friday, July 25, 2025 10:55 AM To: Пашковська Наталія Анатоліївна > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Oleksiy Sokolov >; Кулаковський Дмитро Віталійович >; Darya Olevska >; Ruslan Kaminskiy >; Василішина Галина Миколаївна >; Mariia Rudynska >; Nikita Chychykalo > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Вибачаюсь, поспішив з висновками. Ви надсилаєте повідомлення де start_time в минулому і ми не встигаємо за заданий ttl=60 відправити повідомлення на провайдера та віддаємо статус з помилкою (формується шиною). Повідомлення дійшло до нас 15:41:19 Як варіант, надсилайте запит без тегу start_time або відкоригуйте. Best regards, Mykhailo Dmytryshyn | Integration Solutions Developer +380 (97) 600 88 65 | Mikhail_Dmitrishin@service-team.biz From: Mykhailo Dmytryshyn Sent: Friday, July 25, 2025 10:43 AM To: Пашковська Наталія Анатоліївна > Cc: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support >; Oleksiy Sokolov >; Кулаковський Дмитро Віталійович >; Darya Olevska >; Ruslan Kaminskiy >; Василішина Галина Миколаївна >; Mariia Rudynska >; Nikita Chychykalo > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Добрий день, Наталія, Доповню, колег. Бачу по логам, що статуси відправлялись успішно до вас на CALLBACK_URL. Ось всі запити за вчора: Помилка по номеру 0977600170 приходить від ГМСЮ(на КС не передаємо, з КС в тесті інтеграція зупинена, тому по цим запитам статуси не передаються): Можу змінити для 097 коду оператора відправку СМС на ГМСЮ. Помилка парсингу для номеру 0504466412 вхідного повідомлення в тому, що для SMS мінімальне значення ttl=300, а приходить від вас 60. Best regards, Mykhailo Dmytryshyn | Integration Solutions Developer +380 (97) 600 88 65 | Mikhail_Dmitrishin@service-team.biz From: Nikita Chychykalo > Sent: Friday, July 25, 2025 10:22 AM To: Пашковська Наталія Анатоліївна > Cc: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support >; Oleksiy Sokolov >; Кулаковський Дмитро Віталійович >; Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Добрий день Зі статусом SENT повідомлення було відправлено успішно Зі статусом ERROR повідомлення не відправились через помилку парсингу, яка була зазначена нижче From: Пашковська Наталія Анатоліївна > Sent: Friday, July 25, 2025 9:43 AM To: Oleksiy Sokolov >; Кулаковський Дмитро Віталійович >; Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. А статус доставки від гмсю який? Оскільки самих повідомлень ми не отримали From: Oleksiy Sokolov [mailto:Oleksiy_Sokolov@service-team.biz] Sent: Thursday, July 24, 2025 5:02 PM To: Пашковська Наталія Анатоліївна >; Кулаковський Дмитро Віталійович >; Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Останні запити були в 15:41, помилок по ним не було, всі успішні. Останні помилки були в 15:16 Oleksiy Sokolov Technical Support Manager Phone: +38 093 601 32 26 Email: Oleksiy_Sokolov@service-team.biz Website: www.my-itspecialist.com From: Пашковська Наталія Анатоліївна > Sent: Thursday, July 24, 2025 4:59 PM To: Oleksiy Sokolov >; Кулаковський Дмитро Віталійович >; Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Прохання перевірити останні запити, яка по ним ситуація? From: Oleksiy Sokolov [mailto:Oleksiy_Sokolov@service-team.biz] Sent: Thursday, July 24, 2025 3:31 PM To: Кулаковський Дмитро Віталійович >; Darya Olevska >; Пашковська Наталія Анатоліївна >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Доброго дня, в тесті бачимо помилки по причині некорректного запиту, а саме значення TTL повинно бути не менше 300 Oleksiy Sokolov Technical Support Manager Phone: +38 093 601 32 26 Email: Oleksiy_Sokolov@service-team.biz Website: www.my-itspecialist.com From: Кулаковський Дмитро Віталійович > Sent: Thursday, July 24, 2025 3:22 PM To: Darya Olevska >; Пашковська Наталія Анатоліївна >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Колеги, вітаю. Намагаємось відправити у Oschad12_R_BCS_JSON, отримуємо bad request, можете, будь ласка, перевірити на своїй стороні? From: Darya Olevska [mailto:Darya_Olevska@service-team.biz] Sent: Thursday, July 24, 2025 8:46 AM To: Пашковська Наталія Анатоліївна >; Кулаковський Дмитро Віталійович >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: Re: додавання тегу в шаблон запиту по Viber повідомленням Вітаю, Так, оновлення було встановлено в тест банку ________________________________ Від: Пашковська Наталія Анатоліївна > Надіслано: Wednesday, July 23, 2025 12:48:39 PM Кому: Кулаковський Дмитро Віталійович >; Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Копія: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support >; Василішина Галина Миколаївна >; Mariia Rudynska > Тема: RE: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Добрий день, Підкажіть, будь ласка, чи вдалось внести зміни на тесті? From: Кулаковський Дмитро Віталійович Sent: Monday, July 21, 2025 2:44 PM To: Пашковська Наталія Анатоліївна >; Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Колеги, вітаю. CHG-030522 From: Пашковська Наталія Анатоліївна Sent: Monday, July 21, 2025 2:42 PM To: Darya Olevska >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Добрий день, Дякую, зараз створимо запит From: Darya Olevska [mailto:Darya_Olevska@service-team.biz] Sent: Monday, July 21, 2025 2:23 PM To: Пашковська Наталія Анатоліївна >; Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua >; Василішина Галина Миколаївна >; Mariia Rudynska > Subject: Re: додавання тегу в шаблон запиту по Viber повідомленням Добрий день, @Пашковська Наталія Анатоліївна прохання через архітектуру відкрити на нас заявку щодо додавання тегу \"carousel\". Для доопрацювання додатку СМСок, додавання нового тегу \"carousel\" із вкладеними тегами, потрібно доопрацювати тільки валідацію нової структури для JSON (json schema), для XML такого тегу не буде. Сьогодні плануємо виконати доопрацювання в тесті. Дякую. ________________________________ Від: Пашковська Наталія Анатоліївна > Надіслано: 11 липня 2025 р. 13:32 Кому: Mykhailo Dmytryshyn >; Ruslan Kaminskiy > Копія: GR.00.CC.Admin >; Ihor Draha >; OSHB.ESB.Support > Тема: RE: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. У вкладенні From: Mykhailo Dmytryshyn [mailto:Mikhail_Dmitrishin@service-team.biz] Sent: Friday, July 11, 2025 12:08 PM To: Ruslan Kaminskiy >; Пашковська Наталія Анатоліївна > Cc: GR.00.CC.Admin >; Ihor Draha >; ESB@oschadbank.ua > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Доброго дня, Надайте, будь ласка, повторно спеку - «Додала специфікацію, опис каруселі на 13-14 сторінках» Дякую. Best regards, Mykhailo Dmytryshyn | Integration Solutions Developer +380 (97) 600 88 65 | Mikhail_Dmitrishin@service-team.biz From: Ruslan Kaminskiy > Sent: Friday, July 11, 2025 12:06 PM To: Пашковська Наталія Анатоліївна > Cc: GR.00.CC.Admin >; Mykhailo Dmytryshyn >; Ihor Draha >; OSHB.ESB.Support > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Доброго дня. До нас не дійшов ваш лист від 7го числа з відповідями на наше питання. Побачили його тільки сьогодні в стрічці листування. Взяли в аналіз, відповідь надамо на наступному тижні. Ruslan Kaminskiy | Head of Integration Solutions Development Department +380 (67) 448 07 11 | Ruslan_Kaminskiy@service-team.biz From: Пашковська Наталія Анатоліївна > Sent: Friday, July 11, 2025 10:59 AM To: Mykhailo Dmytryshyn >; Ihor Draha >; OSHB.ESB.Support > Cc: GR.00.CC.Admin > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Добрий день, Чи вдалось вам проаналізувати інфо по новому тегу? Що потрібно щоб його додати в структуру? From: Пашковська Наталія Анатоліївна Sent: Monday, July 7, 2025 6:18 PM To: 'Mykhailo Dmytryshyn' >; Ihor Draha >; ESB@oschadbank.ua > Cc: GR.00.CC.Admin > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Так, по json включенням з'явився новий тип повідомлень зі своїми тегами. І ми хочемо його використовувати в комунікації з клієнтами. Тому, потрібно щоб ви могли його приймати Він буде виключно в блоці опцій “viber”. Складається з трьох тегів: \"text\", \"ttl\", \"carousel\". Додала специфікацію, опис каруселі на 13-14 сторінках приклад { \"viber\": { \"text\": \"Text for Viber\", \"ttl\": 60, \"carousel\": { \"items\": [{ \"title\": \"Title text for item 1\", \"imageUrl\": \"https://exmple.com/img1.png\", \"primaryButton\": { \"label\": \"Button 1.1\", \"actionUrl\": https://example.com/11}, \"secondaryButton\": { /* опціонально */ \"label\": \"Button 1.2\", \"actionUrl\": https://example.com/1_2} }, { \"title\": \"Title text for item 2\", \"imageUrl\":\"https://example.com/img2.png\", \"primaryButton\": { \"label\": \"Button 2.1\", \"actionUrl\": https://example.com/2_1}, \"secondaryButton\": { /* опціонально */ \"label\": \"Button 2.2\", \"actionUrl\": https://example.com/2_2} }] } } } Ви блок тегів по “viber” ніяк в логіці не опрацьовуєте. І цей тег також не потрібно опрацьовувати, просто транслювати далі на GMSU From: Mykhailo Dmytryshyn [mailto:Mikhail_Dmitrishin@service-team.biz] Sent: Monday, July 7, 2025 5:38 PM To: Пашковська Наталія Анатоліївна >; Ihor Draha >; ESB@oschadbank.ua > Cc: GR.00.CC.Admin > Subject: RE: додавання тегу в шаблон запиту по Viber повідомленням Добрий день, Підкажіть, правильно розумію, що повідомлення, яке буде отримувати ІШД на відправку до GMSU зміниться? ІШД потрібно його якось обробляти в лозіці? в якому саме місці буде додано новий тег? Best regards, Mykhailo Dmytryshyn | Integration Solutions Developer +380 (97) 600 88 65 | Mikhail_Dmitrishin@service-team.biz From: Пашковська Наталія Анатоліївна > Sent: Monday, July 7, 2025 4:28 PM To: Ihor Draha >; Mykhailo Dmytryshyn >; OSHB.ESB.Support > Cc: GR.00.CC.Admin > Subject: додавання тегу в шаблон запиту по Viber повідомленням УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Добрий день, GMSU розширили специфікацію свого api і додали новий тип Viber повідомлень - «карусель» Відповідно, нам потрібно додати в інтеграцію по json новий тег \"carousel\" і щоб на стороні ІШД він сприймався без помилок Для прикладу структура тегу (може бути від 2 до 5 title): \"carousel\": { \"items\": [{ \"title\": \"Title text for item 1\", \"imageUrl\": \"https://exmple.com/img1.png\", \"primaryButton\": { \"label\": \"Button 1.1\", \"actionUrl\": \"https://example.com/11\"}, \"secondaryButton\": { /* опціонально */ \"label\": \"Button 1.2\", \"actionUrl\": \"https://example.com/1_2\"}},{ \"title\": \"Title text for item 2\", \"imageUrl\":\"https://example.com/img2.png\", \"primaryButton\": { \"label\": \"Button 2.1\", \"actionUrl\": \"https://example.com/2_1\"}, \"secondaryButton\": { /* опціонально */ \"label\": \"Button 2.2\", \"actionUrl\": \"https://example.com/2_2\" Підкажіть, будь ласка, як найменш безболісно це можна зробити. Завчасно дякую. Email secured by Check Point Email secured by Check Point \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
+  "folderName": "OSHB"
+}
+DEBUG: ReportGenerator created
+DEBUG: Starting message processing...
+Processing 1626 messages...
+Grouped into 232 threads
+Created 232 issues
+DEBUG: Processing result:
+  - Found issues: 232
+  - Statistics: {
+  "totalThreads": 232,
+  "total": 232,
+  "resolved": 0,
+  "partial": 0,
+  "inProgress": 232,
+  "avgMessagesPerIssue": "7.0"
+}
+DEBUG: First issue (if any): {
+  "dateRegistered": "2024-10-17",
+  "timeRegistered": "15:19:00",
+  "system": "ESB",
+  "messageCount": 20,
+  "subject": "Запит щодо перезавантаження шини",
+  "description": "=== ПЕРЕПИСКА ===\n\n[2024-10-17 15:19:00] Unknown:\nДоброго дня! Прошу перезавантажити шину. Є підозра, що не відправляються пакети. From: Гуренко Володимир Володимирович Sent: Thursday, October 17, 2024 3:19 PM To: 'Oleksiy Sokolov' ; Valerii Kempf ; Ruslan Kaminskiy ; Лесняк Сергій Богданович Cc: Dmytro Sandul ; ESB@oschadbank.ua Subject: RE: Запит щодо перезавантаження шини Дякую Вам! From: Oleksiy Sokolov Sent: Thursday, October 17, 2024 2:59 PM To: Гуренко Володимир Володимирович ; Valerii Kempf ; Ruslan Kaminskiy ; Лесняк Сергій Богданович \n\n---\n\n[2024-11-15 14:05:00] Unknown:\nДоброго дня. Хочу повідомити вас, що вчора на ІШД було встановлено оновлення по заявці OSHBESBSUP-520 для вирішення проблеми з неправильно викладеними файлами, які зупиняють процес передачі на ІШД. Тепер ці файли будуть автоматично перекладатись в папку: \\\\oschadbank.ua\\dfs\\AppSys\\GRANTY\\ARCH\\granty_arch\\BAD Ruslan Kaminskiy | Head of Integration Solutions Development Department +380 (67) 448 07 11 | Ruslan_Kaminskiy@service-team.biz From: Oleksiy Sokolov Sent: Friday, November 15, 2024 2:05 PM \n\n---\n\n[2024-11-20 16:49:00] Unknown:\nдякую Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Рудевич Андрій Євгенович Sent: Wednesday, November 20, 2024 4:49 PM To: Valerii Kempf ; Василішина Галина Миколаївна Cc: OSHB.ESB.Support Subject: RE: Запит щодо перезавантаження шини Добрий вечір. Погоджено. ______________ З повагою, Андрій Рудевич Керівник проєктів і програм відділу системного аналізу управління архітектури та системного аналізу департамен\n\n---\n\n[2024-11-20 17:45:00] Unknown:\nДобрий вечір. Погоджено. ______________ З повагою, Андрій Рудевич Керівник проєктів і програм відділу системного аналізу управління архітектури та системного аналізу департаменту інформатизації вул. Рене Декарта, 5 Київ, 03062, Україна тел.: +380 (66) 058 21 02 тел. внутрішній: 9763 From: Valerii Kempf Sent: Wednesday, November 20, 2024 5:45 PM To: Василішина Галина Миколаївна ; Рудевич Андрій Євгенович Cc: ESB@oschadbank.ua Subject: Fw: Запит щодо перезавантаження шини прошу погодити встановлен\n\n---\n\n[2024-11-22 10:20:00] Unknown:\nBAD в \\\\oschadbank.ua\\dfs\\AppSys\\GRANTY\\ARCH\\ тому що це робоча папка з архівними та відбракованими файлами по цьому застосунку. ми складаєм ВСІ файли які відбраковані, які належать всім бранчамю ніхто крім адмінів та шини не має мати доступу до цього каталогу. якщо маєте іншу візію, давайте обговоримо. Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Ruslan Kaminskiy Sent: Friday, November 22, 2024 10:20 AM To:\n\n---\n\n[2024-11-22 10:48:00] Unknown:\nДоброго дня. Долучаю до листування розробника. @Valerii Kempf поясни будь ласка. Ruslan Kaminskiy | Head of Integration Solutions Development Department +380 (67) 448 07 11 | Ruslan_Kaminskiy@service-team.biz From: Лесняк Сергій Богданович Sent: Friday, November 22, 2024 10:48 AM To: Ruslan Kaminskiy Subject: RE: Запит щодо перезавантаження шини Доброго дня Робоча папка: \\\\oschadbank.ua\\dfs\\AppSys\\OschadBiz Чому BAD в \\\\oschadbank.ua\\dfs\\AppSys\\GRANTY\\ARCH\\ ? From: Ruslan Kaminskiy > Sent: Thurs\n\n---\n\n[2024-11-22 11:13:00] Unknown:\nДодам, якщо банк вважає що потрібно в іншому місці, тоді прошу створити її де вважаєте за потрібним, також, наріжте права включно з SVC_IIB_HO та абмінам шини, і повідомте як буде готово, ми з радістью переналаштуємо. Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Valerii Kempf Sent: Friday, November 22, 2024 11:13 AM To: Лесняк Сергій Богданович Cc: OSHB.ESB.Support ; Ruslan Kaminskiy Subject: Re: Запит щодо \n\n---\n\n[2024-11-22 12:55:00] Unknown:\nДля нас на каталог треба full права для (читання, запис, видалення файлів) Групи GR.00.ESB.Support І обліковки ІШД SVC_IIB_HO І якщо можна на сам каталог \\\\oschadbank.ua\\dfs\\AppSys\\OschadBiz також додати прав для групи GR.00.ESB.Support, аналогічних SVC_IIB_HO. Бо зараз не зручно технічній підтримці відкривати від сервісної обліковки папки. Ruslan Kaminskiy | Head of Integration Solutions Development Department +380 (67) 448 07 11 | Ruslan_Kaminskiy@service-team.biz From: Valerii Kempf Sent: Fri\n\n---\n\n[2024-11-22 13:11:00] Unknown:\nДоброго дня. Підкажіть чи готова нова папка для переналаштування по BAD файлам? Ruslan Kaminskiy | Head of Integration Solutions Development Department +380 (67) 448 07 11 | Ruslan_Kaminskiy@service-team.biz From: Ruslan Kaminskiy Sent: Friday, November 22, 2024 1:11 PM To: Лесняк Сергій Богданович Cc: OSHB.ESB.Support ; Valerii Kempf Subject: RE: Запит щодо перезавантаження шини Для нас на каталог треба full права для (читання, запис, видалення файлів) Групи GR.00.ESB.Support І обліковки ІШД SV\n\n---\n\n[2024-11-29 09:45:00] Unknown:\nСергію Богдановичу, специфіка роботи флоу по ощадбізнес, те що ми скануємо корньову директорію OschadBiz, і якщо ми будемо використовувати BAD папку на тому-ж рівні, ми будемо ганяти ті файли по кругу. Прошу зробити її або на директорію вище, або десь в іншому місці. Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Ruslan Kaminskiy Sent: Friday, November 29, 2024 9:45 AM To: Лесняк Сергій Богданович Cc: OSHB.ESB\n\n---\n\n[2024-11-29 10:45:00] Unknown:\nДоброго дня. Ще 22.11 відписав у звернення SC-11929358 (OSHBESBSUP-520) про готовність папки. From: Ruslan Kaminskiy Sent: Friday, November 29, 2024 10:45 AM To: Лесняк Сергій Богданович Cc: ESB@oschadbank.ua ; Valerii Kempf Subject: RE: Запит щодо перезавантаження шини Доброго дня. Підкажіть чи готова нова папка для переналаштування по BAD файлам? Ruslan Kaminskiy | Head of Integration Solutions Development Department +380 (67) 448 07 11 | Ruslan_Kaminskiy@service-team.biz From: Ruslan Kaminski\n\n---\n\n[2024-11-29 14:04:00] Unknown:\nValerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Valerii Kempf Sent: Friday, November 29, 2024 2:04 PM To: Лесняк Сергій Богданович Cc: OSHB.ESB.Support ; Ruslan Kaminskiy Subject: Re: Запит щодо перезавантаження шини Сергію Богдановичу, специфіка роботи флоу по ощадбізнес, те що ми скануємо корньову директорію OschadBiz, і якщо ми будемо використовувати BAD папку на тому-ж рівні, ми будемо ганяти ті файли по кр\n\n---\n\n[2024-11-29 14:04:00] Unknown:\nСергію Богдановичу, чи є вже нова папка? Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Valerii Kempf Sent: Friday, November 29, 2024 2:04 PM To: Лесняк Сергій Богданович Cc: OSHB.ESB.Support ; Ruslan Kaminskiy Subject: Re: Запит щодо перезавантаження шини Сергію Богдановичу, специфіка роботи флоу по ощадбізнес, те що ми скануємо корньову директорію OschadBiz, і якщо ми будемо використовувати BAD папку на тому\n\n---\n\n[2024-12-03 16:29:00] Unknown:\nДоброго вечора, перезапустили застосунок. Oleksiy Sokolov Technical Support Manager Phone: +38 093 601 32 26 Email: Oleksiy_Sokolov@service-team.biz Website: www.my-itspecialist.com From: Гуренко Володимир Володимирович Sent: Tuesday, December 3, 2024 4:29 PM To: Oleksiy Sokolov ; Valerii Kempf ; Ruslan Kaminskiy ; Лесняк Сергій Богданович Cc: Dmytro Sandul ; OSHB.ESB.Support Subject: RE: Запит щодо перезавантаження шини Доброго дня! Прошу перезавантажити шину. Є підозра, що не відправляються па\n\n---\n\n[2024-12-03 16:33:00] Unknown:\nДякую! From: Oleksiy Sokolov Sent: Tuesday, December 3, 2024 4:33 PM To: Гуренко Володимир Володимирович ; Valerii Kempf ; Ruslan Kaminskiy ; Лесняк Сергій Богданович Cc: Dmytro Sandul ; ESB@oschadbank.ua Subject: RE: Запит щодо перезавантаження шини Доброго вечора, перезапустили застосунок. Oleksiy Sokolov Technical Support Manager Phone: +38 093 601 32 26 Email: Oleksiy_Sokolov@service-team.biz Website: www.my-itspecialist.com From: Гуренко Володимир Володимирович > Sent: Tuesday, December 3, \n\n---\n\n[2024-12-03 16:38:00] Unknown:\nДоброго дня! Прошу перезавантажити шину. Був файл 3902 в папці IN (я його вилучив). Можливо є ін. файли, які блокують шину. From: Гуренко Володимир Володимирович Sent: Tuesday, December 3, 2024 4:38 PM To: 'Oleksiy Sokolov' ; Valerii Kempf ; Ruslan Kaminskiy ; Лесняк Сергій Богданович Cc: Dmytro Sandul ; ESB@oschadbank.ua Subject: RE: Запит щодо перезавантаження шини Дякую! From: Oleksiy Sokolov > Sent: Tuesday, December 3, 2024 4:33 PM To: Гуренко Володимир Володимирович >; Valerii Kempf >; Rus\n\n---\n\n[2024-12-04 14:40:00] Unknown:\nДоброго дня. Ще не створили. Карманна Н.В. зайнята. Повідомлю, коли створять. From: Valerii Kempf Sent: Wednesday, December 4, 2024 2:40 PM To: Лесняк Сергій Богданович Cc: ESB@oschadbank.ua ; Ruslan Kaminskiy Subject: Re: Запит щодо перезавантаження шини Сергію Богдановичу, чи є вже нова папка? Valerii Kempf | Integration Solutions Developer +380672482653 | Valerii_Kempf@service-team.biz ________________________________ From: Valerii Kempf > Sent: Friday, November 29, 2024 2:04 PM To: Лесняк Се\n\n---\n\n[2025-01-28 11:35:00] Unknown:\nДоброго дня, вибачаємось за затримку у відповіді. Чому ви вирішили що є якась проблема у роботі шини? Ми зі свого боку не бачимо ніяких проблем в передачах, всі файли ходять нормально. Oleksiy Sokolov Technical Support Manager Phone: +38 093 601 32 26 Email: Oleksiy_Sokolov@service-team.biz Website: www.my-itspecialist.com From: Гуренко Володимир Володимирович Sent: Tuesday, January 28, 2025 11:35 AM To: Oleksiy Sokolov ; Valerii Kempf ; Ruslan Kaminskiy ; LesnyakSB Cc: Dmytro Sandul ; OSHB.ESB.\n\n---\n\n[2025-01-28 11:35:00] Unknown:\nУВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкладеннями. Не відкривайте, якщо не очікували цього листа. Доброго дня! Подивіться, будь ласка, чи передає шина документи. Наприклад заявка 6752 ТВБВ 10003/0511 From: Гуренко Володимир Володимирович Sent: Tuesday, January 28, 2025 11:35 AM To: 'Oleksiy Sokolov' ; 'Valerii Kempf' ; 'Ruslan Kaminskiy' ; Лесняк Сергій Богданович Cc: 'Dmytro Sandul' ; ESB@oschadbank.ua Subject: RE: Запит щодо перезавантаження шини Доброго дня! Прошу перезава\n\n---\n\n[2025-07-15 16:16:00] Unknown:\nДоброго дня, з боку шини проблем не бачимо, заявка була успішно передана. Oleksiy Sokolov Technical Support Manager Phone: +38 093 601 32 26 Email: Oleksiy_Sokolov@service-team.biz Website: www.my-itspecialist.com From: Гуренко Володимир Володимирович Sent: Tuesday, July 15, 2025 4:16 PM To: Oleksiy Sokolov ; Valerii Kempf ; Ruslan Kaminskiy ; LesnyakSB Cc: Dmytro Sandul ; OSHB.ESB.Support Subject: RE: Запит щодо перезавантаження шини УВАГА! – Зовнішній лист: Будьте обережні з посиланнями та вкл\n",
+  "status": "Не закрито",
+  "responsible": "",
+  "solution": "",
+  "dateResolved": "",
+  "timeResolved": "",
+  "importance": "Середній",
+  "source": "Email"
+}

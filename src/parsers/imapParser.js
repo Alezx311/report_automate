@@ -21,12 +21,12 @@ class ImapParser {
       this.imap = new Imap(this.config)
 
       this.imap.once('ready', () => {
-        console.log('✅ IMAP підключено')
+        console.log('IMAP connected')
         resolve()
       })
 
       this.imap.once('error', err => {
-        console.error('❌ IMAP помилка:', err)
+        console.error('IMAP error:', err)
         reject(err)
       })
 
@@ -65,9 +65,9 @@ class ImapParser {
           return
         }
 
-        console.log(`📁 Папка: ${folder}, повідомлень: ${box.messages.total}`)
+        console.log(`Folder: ${folder}, messages: ${box.messages.total}`)
 
-        // Формуємо критерії пошуку
+        // Build search criteria
         let criteria = ['ALL']
 
         if (startDate) {
@@ -87,12 +87,12 @@ class ImapParser {
           }
 
           if (uids.length === 0) {
-            console.log('⚠️ Не знайдено повідомлень')
+            console.log('No messages found')
             resolve([])
             return
           }
 
-          console.log(`📧 Знайдено ${uids.length} повідомлень`)
+          console.log(`Found ${uids.length} messages`)
 
           const messages = []
           const fetch = this.imap.fetch(uids, {
@@ -106,7 +106,7 @@ class ImapParser {
             msg.on('body', stream => {
               simpleParser(stream, (err, parsed) => {
                 if (err) {
-                  console.error('⚠️ Помилка парсингу:', err)
+                  console.error('Parsing error:', err)
                   return
                 }
 
@@ -124,19 +124,19 @@ class ImapParser {
 
                 processed++
                 if (processed % 10 === 0) {
-                  console.log(`  Оброблено ${processed}/${uids.length}`)
+                  console.log(`  Processed ${processed}/${uids.length}`)
                 }
               })
             })
           })
 
           fetch.once('error', err => {
-            console.error('❌ Помилка fetch:', err)
+            console.error('Fetch error:', err)
             reject(err)
           })
 
           fetch.once('end', () => {
-            console.log(`✅ Завершено. Оброблено ${messages.length} повідомлень`)
+            console.log(`Complete. Processed ${messages.length} messages`)
             resolve(messages)
           })
         })

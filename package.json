@@ -4,6 +4,7 @@
   "description": "Desktop app for parsing PST files and generating support tickets report",
   "main": "main.js",
   "scripts": {
+    "fixPS": "$OutputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding",
     "start": "electron .",
     "build": "electron-builder"
   },
