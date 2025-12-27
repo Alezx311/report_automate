@@ -1,0 +1,53 @@
+{
+  "name": "report-automate-pst-email-parser",
+  "version": "1.0.0",
+  "description": "Desktop app for parsing PST files and generating support tickets report",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "electron",
+    "pst",
+    "email",
+    "parser"
+  ],
+  "author": "alezx311@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^39.2.4",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "csv-writer": "^1.6.0",
+    "iconv-lite": "^0.7.0",
+    "pst-parser": "^0.0.7"
+  },
+  "build": {
+    "appId": "com.yourcompany.pstparser",
+    "productName": "PST Email Parser",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "index.html",
+      "styles.css"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "icon.png"
+    }
+  }
+}

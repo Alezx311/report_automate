@@ -1,3 +1,7 @@
+#PST Files and outputs
+*.pst
+output/
+
 # Logs
 logs
 *.log

@@ -1,0 +1,16 @@
+; Пофіксити кракозябри в консолі
+$OutputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
+
+fixEncoding
+stripHtml
+groupByThread
+extractSystem
+cleanBody
+extractDescription
+extractSolution
+calculateImportance
+formatDate
+formatTime
+formatThreadText
+processThreads
+getResponsible

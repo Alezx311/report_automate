@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PST Email Parser - Парсинг звернень</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>📧 PST Email Parser</h1>
+        <p>Автоматизований парсинг звернень з PST-файлів</p>
+      </header>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label for="pst-path">PST Файл:</label>
+          <div class="file-input-group">
+            <input type="text" id="pst-path" readonly placeholder="Файл не обрано..." />
+            <button id="select-file-btn" class="btn btn-primary">Оберіть PST-файл</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="support-emails">Email адреси техпідтримки (через кому):</label>
+          <input
+            type="text"
+            id="support-emails"
+            placeholder="Place support email here"
+            value="Oleksiy_Sokolov@service-team.biz,Dmytro_Sandul@service-team.biz,Nikita_Chychykalo@service-team.biz,Ihor_Draha@service-team.biz" />
+        </div>
+
+        <div class="form-group">
+          <label for="keywords">Ключові слова для пошуку (через кому):</label>
+          <input type="text" id="keywords" placeholder="Place keywords here" value="" />
+        </div>
+
+        <div class="form-group">
+          <label for="filter-text">Фільтр (опціонально, слово в темі/тексті):</label>
+          <input type="text" id="filter-text" placeholder="Наприклад: IPS, помилка, тощо" />
+        </div>
+
+        <label>Початок періоду:</label>
+        <input type="date" id="startDate" />
+
+        <label>Кінець періоду:</label>
+        <input type="date" id="endDate" />
+
+        <label>Batch size (для великих PST):</label>
+        <input type="number" id="batchSize" value="100" min="100" />
+
+        <label>Ігнорувати повідомлення з порожніми датами:</label>
+        <input type="checkbox" id="ignoreInvalidDates" />
+
+        <button id="parse-btn" class="btn btn-success" disabled>Парсити та генерувати CSV</button>
+      </div>
+
+      <div id="result-section" class="result-section" style="display: none">
+        <h2>Результат</h2>
+        <div id="result-info" class="result-info"></div>
+      </div>
+
+      <div id="preview-section" class="preview-section" style="display: none">
+        <div class="preview-header">
+          <h2>Редагування даних перед експортом</h2>
+          <button id="export-csv-btn" class="btn btn-success">📥 Експортувати в CSV</button>
+        </div>
+        <div class="table-container">
+          <table id="preview-table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Час</th>
+                <th>Система</th>
+                <th>Тема</th>
+                <th>Опис</th>
+                <th>Статус</th>
+                <th>Відповідальний</th>
+                <th>Важливість</th>
+                <th>Дії</th>
+              </tr>
+            </thead>
+            <tbody id="preview-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="loading" class="loading" style="display: none">
+        <div class="spinner"></div>
+        <p>Обробка PST файлу... Це може зайняти кілька хвилин.</p>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
