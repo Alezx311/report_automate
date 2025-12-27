@@ -22,7 +22,13 @@
   "dependencies": {
     "csv-writer": "^1.6.0",
     "iconv-lite": "^0.7.0",
-    "pst-parser": "^0.0.7"
+    "pst-parser": "^0.0.7",
+    "dotenv": "^16.3.1",
+    "imap": "^0.8.19",
+    "mailparser": "^3.6.5",
+    "jira-client": "^8.2.2",
+    "axios": "^1.6.2",
+    "date-fns": "^2.30.0"
   },
   "build": {
     "appId": "com.yourcompany.pstparser",
@@ -33,9 +39,9 @@
     "files": [
       "main.js",
       "preload.js",
-      "renderer.js",
-      "index.html",
-      "styles.css"
+      "src/**/*",
+      "ui/**/*",
+      "config/**/*"
     ],
     "win": {
       "target": "nsis",

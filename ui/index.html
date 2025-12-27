@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Automate</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>📊 Report Automate</h1>
+        <p>Автоматизована система звітності</p>
+      </header>
+
+      <!-- Вибір джерела даних -->
+      <div class="source-selector">
+        <button id="source-pst" class="source-btn active">📁 PST Файл</button>
+        <button id="source-imap" class="source-btn">📧 Outlook IMAP</button>
+        <button id="source-jira" class="source-btn">📋 Jira</button>
+      </div>
+
+      <!-- Панелі джерел -->
+      <div class="form-section">
+        <!-- PST Панель -->
+        <div id="pst-panel" class="source-panel">
+          <h3>PST Файл</h3>
+          <div class="form-group">
+            <label>PST Файл:</label>
+            <div class="file-input-group">
+              <input type="text" id="pst-path" readonly placeholder="Файл не обрано..." />
+              <button id="select-pst-btn" class="btn btn-primary">Вибрати файл</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMAP Панель -->
+        <div id="imap-panel" class="source-panel" style="display: none">
+          <h3>Outlook IMAP</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" id="imap-user" placeholder="your-email@company.com" />
+            </div>
+            <div class="form-group">
+              <label>App Password:</label>
+              <input type="password" id="imap-password" placeholder="xxxx-xxxx-xxxx-xxxx" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Host:</label>
+              <input type="text" id="imap-host" value="outlook.office365.com" />
+            </div>
+            <div class="form-group">
+              <label>Port:</label>
+              <input type="number" id="imap-port" value="993" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Папка:</label>
+            <select id="imap-folder">
+              <option value="INBOX">INBOX</option>
+            </select>
+          </div>
+          <button id="connect-imap-btn" class="btn btn-success">🔌 Підключитись</button>
+        </div>
+
+        <!-- Jira Панель -->
+        <div id="jira-panel" class="source-panel" style="display: none">
+          <h3>Jira</h3>
+          <div class="form-group">
+            <label>Jira Host:</label>
+            <input type="text" id="jira-host" placeholder="https://your-company.atlassian.net" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" id="jira-email" placeholder="your-email@company.com" />
+            </div>
+            <div class="form-group">
+              <label>API Token:</label>
+              <input type="password" id="jira-token" placeholder="API токен" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Project Key:</label>
+            <input type="text" id="jira-project" value="SUPPORT" placeholder="SUPPORT" />
+          </div>
+          <button id="connect-jira-btn" class="btn btn-success">🔌 Підключитись</button>
+        </div>
+
+        <!-- Загальні налаштування -->
+        <div class="common-settings">
+          <h3>Налаштування</h3>
+          <div class="form-group">
+            <label>Email техпідтримки (через кому):</label>
+            <input type="text" id="support-emails" placeholder="support@company.com, admin@company.com" />
+          </div>
+          <div class="form-group">
+            <label>Ключові слова (через кому):</label>
+            <input type="text" id="keywords" placeholder="помилка, error, терміново" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Дата з:</label>
+              <input type="date" id="start-date" />
+            </div>
+            <div class="form-group">
+              <label>Дата по:</label>
+              <input type="date" id="end-date" />
+            </div>
+          </div>
+        </div>
+
+        <button id="parse-btn" class="btn btn-success btn-large" disabled>🚀 Парсити та генерувати звіт</button>
+      </div>
+
+      <!-- Результати -->
+      <div id="result-section" class="result-section" style="display: none">
+        <h2>Результат</h2>
+        <div id="result-info"></div>
+      </div>
+
+      <!-- Таблиця -->
+      <div id="preview-section" class="preview-section" style="display: none">
+        <div class="preview-header">
+          <h2>Звернення</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn btn-primary">📥 Експорт в CSV</button>
+            <button id="export-jira-btn" class="btn btn-success">📤 Експорт в Jira</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table id="preview-table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Час</th>
+                <th>Система</th>
+                <th>Листів</th>
+                <th>Тема</th>
+                <th>Опис</th>
+                <th>Статус</th>
+                <th>Відповідальний</th>
+                <th>Важливість</th>
+              </tr>
+            </thead>
+            <tbody id="preview-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Завантаження -->
+      <div id="loading" class="loading" style="display: none">
+        <div class="spinner"></div>
+        <p>Обробка даних... Це може зайняти кілька хвилин.</p>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
