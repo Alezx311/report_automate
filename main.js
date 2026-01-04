@@ -43,7 +43,7 @@ app.on('activate', () => {
 })
 
 // ============================================
-// Вибір PST файлу
+// Вибір PST файлу або JSON
 // ============================================
 
 ipcMain.handle('select-pst-file', async () => {
@@ -51,6 +51,7 @@ ipcMain.handle('select-pst-file', async () => {
     properties: ['openFile'],
     filters: [
       { name: 'PST Files', extensions: ['pst'] },
+      { name: 'JSON Files (processed chunks)', extensions: ['json'] },
       { name: 'All Files', extensions: ['*'] },
     ],
   })
@@ -62,20 +63,64 @@ ipcMain.handle('select-pst-file', async () => {
 })
 
 // ============================================
-// Парсинг з PST
+// Парсинг з PST або JSON
 // ============================================
 
 ipcMain.handle('parse-pst', async (event, options) => {
   try {
+    const filePath = options.pstPath
+    const fileExt = path.extname(filePath).toLowerCase()
+
+    // Перевіряємо чи це JSON файл з обробленими даними
+    if (fileExt === '.json') {
+      console.log('Loading processed JSON file...')
+      const jsonData = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+      // Перевіряємо чи це файл з об'єднаними результатами
+      if (jsonData.issues && jsonData.stats) {
+        console.log(`Loaded ${jsonData.issues.length} issues from processed JSON`)
+        return {
+          success: true,
+          data: jsonData.issues,
+          stats: jsonData.stats,
+        }
+      }
+
+      // Або це окремий chunk з повідомленнями
+      if (jsonData.messages) {
+        console.log(`Processing ${jsonData.messages.length} messages from JSON chunk`)
+        const reportGenerator = new ReportGenerator({
+          supportEmails: options.supportEmails,
+          keywords: options.keywords,
+        })
+        const { issues, stats } = reportGenerator.processMessages(jsonData.messages)
+        return {
+          success: true,
+          data: issues,
+          stats,
+        }
+      }
+
+      throw new Error('Невідомий формат JSON файлу')
+    }
+
+    // Інакше це PST файл - стандартна обробка
     console.log('Starting PST file parsing...')
-    console.log('DEBUG: Parse options:', JSON.stringify({
-      pstPath: options.pstPath,
-      supportEmails: options.supportEmails,
-      keywords: options.keywords,
-      startDate: options.startDate,
-      endDate: options.endDate,
-      batchSize: options.batchSize || 100,
-    }, null, 2))
+    console.log(
+      'DEBUG: Parse options:',
+      JSON.stringify(
+        {
+          pstPath: options.pstPath,
+          supportEmails: options.supportEmails,
+          keywords: options.keywords,
+          startDate: options.startDate,
+          endDate: options.endDate,
+          batchSize: options.batchSize || 100,
+        },
+        null,
+        2,
+      ),
+    )
 
     const pstParser = new PSTParser(options.pstPath)
     console.log('DEBUG: PSTParser created')
@@ -87,8 +132,14 @@ ipcMain.handle('parse-pst', async (event, options) => {
     })
 
     console.log(`Received ${messages.length} messages`)
-    console.log('DEBUG: First message (if any):', messages.length > 0 ? JSON.stringify(messages[0], null, 2) : 'No messages')
-    console.log('DEBUG: Last message (if any):', messages.length > 1 ? JSON.stringify(messages[messages.length - 1], null, 2) : 'Only one or none')
+    console.log(
+      'DEBUG: First message (if any):',
+      messages.length > 0 ? JSON.stringify(messages[0], null, 2) : 'No messages',
+    )
+    console.log(
+      'DEBUG: Last message (if any):',
+      messages.length > 1 ? JSON.stringify(messages[messages.length - 1], null, 2) : 'Only one or none',
+    )
 
     const reportGenerator = new ReportGenerator({
       supportEmails: options.supportEmails,
@@ -110,7 +161,7 @@ ipcMain.handle('parse-pst', async (event, options) => {
       stats,
     }
   } catch (error) {
-    console.error('PST parsing error:', error)
+    console.error('File parsing error:', error)
     console.error('DEBUG: Stack trace:', error.stack)
     return {
       success: false,
@@ -151,52 +202,52 @@ ipcMain.handle('connect-imap', async (event, config) => {
   }
 })
 
-ipcMain.handle('parse-imap', async (event, options) => {
-  let imapParser = null
+// ipcMain.handle('parse-imap', async (event, options) => {
+//   let imapParser = null
 
-  try {
-    console.log('Loading emails via IMAP...')
+//   try {
+//     console.log('Loading emails via IMAP...')
 
-    imapParser = new ImapParser({
-      user: options.user || process.env.OUTLOOK_IMAP_USER,
-      password: options.password || process.env.OUTLOOK_IMAP_PASSWORD,
-      host: options.host || process.env.OUTLOOK_IMAP_HOST,
-      port: options.port || process.env.OUTLOOK_IMAP_PORT,
-    })
+//     imapParser = new ImapParser({
+//       user: options.user || process.env.OUTLOOK_IMAP_USER,
+//       password: options.password || process.env.OUTLOOK_IMAP_PASSWORD,
+//       host: options.host || process.env.OUTLOOK_IMAP_HOST,
+//       port: options.port || process.env.OUTLOOK_IMAP_PORT,
+//     })
 
-    await imapParser.connect()
+//     await imapParser.connect()
 
-    const messages = await imapParser.fetchEmails({
-      folder: options.folder || 'INBOX',
-      startDate: options.startDate,
-      endDate: options.endDate,
-    })
+//     const messages = await imapParser.fetchEmails({
+//       folder: options.folder || 'INBOX',
+//       startDate: options.startDate,
+//       endDate: options.endDate,
+//     })
 
-    await imapParser.disconnect()
+//     await imapParser.disconnect()
 
-    console.log(`Received ${messages.length} messages`)
+//     console.log(`Received ${messages.length} messages`)
 
-    const reportGenerator = new ReportGenerator({
-      supportEmails: options.supportEmails,
-      keywords: options.keywords,
-    })
+//     const reportGenerator = new ReportGenerator({
+//       supportEmails: options.supportEmails,
+//       keywords: options.keywords,
+//     })
 
-    const { issues, stats } = reportGenerator.processMessages(messages)
+//     const { issues, stats } = reportGenerator.processMessages(messages)
 
-    return {
-      success: true,
-      data: issues,
-      stats,
-    }
-  } catch (error) {
-    console.error('IMAP parsing error:', error)
-    if (imapParser) await imapParser.disconnect()
-    return {
-      success: false,
-      error: error.message,
-    }
-  }
-})
+//     return {
+//       success: true,
+//       data: issues,
+//       stats,
+//     }
+//   } catch (error) {
+//     console.error('IMAP parsing error:', error)
+//     if (imapParser) await imapParser.disconnect()
+//     return {
+//       success: false,
+//       error: error.message,
+//     }
+//   }
+// })
 
 // ============================================
 // Робота з Jira
@@ -322,6 +373,119 @@ ipcMain.handle('export-csv', async (event, issues) => {
     }
   } catch (error) {
     console.error('CSV export error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// ============================================
+// IMAP - Тестування підключення
+// ============================================
+
+ipcMain.handle('test-imap-connection', async (event, credentials) => {
+  try {
+    console.log('Testing IMAP connection...')
+    const imapParser = new ImapParser({
+      user: credentials.user,
+      password: credentials.password,
+      host: credentials.host || 'outlook.office365.com',
+      port: credentials.port || 993,
+      tls: credentials.tls !== false,
+    })
+
+    const result = await imapParser.testConnection()
+    return result
+  } catch (error) {
+    console.error('IMAP test error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// ============================================
+// IMAP - Отримання списку папок
+// ============================================
+
+ipcMain.handle('get-imap-folders', async (event, credentials) => {
+  try {
+    console.log('Getting IMAP folders...')
+    const imapParser = new ImapParser({
+      user: credentials.user,
+      password: credentials.password,
+      host: credentials.host || 'outlook.office365.com',
+      port: credentials.port || 993,
+      tls: credentials.tls !== false,
+    })
+
+    await imapParser.connect()
+    const folders = await imapParser.getFoldersWithStats()
+    await imapParser.disconnect()
+
+    return {
+      success: true,
+      folders,
+    }
+  } catch (error) {
+    console.error('IMAP folders error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// ============================================
+// IMAP - Парсинг листів з вибраних папок
+// ============================================
+
+ipcMain.handle('parse-imap', async (event, options) => {
+  try {
+    console.log('Starting IMAP parsing...')
+    const imapParser = new ImapParser({
+      user: options.user,
+      password: options.password,
+      host: options.host || 'outlook.office365.com',
+      port: options.port || 993,
+      tls: options.tls !== false,
+    })
+
+    await imapParser.connect()
+
+    // Витягуємо листи з кожної вибраної папки
+    let allMessages = []
+    for (const folder of options.folders) {
+      console.log(`Fetching from folder: ${folder}`)
+      const messages = await imapParser.fetchEmails({
+        folder,
+        startDate: options.startDate,
+        endDate: options.endDate,
+      })
+      allMessages = allMessages.concat(messages)
+    }
+
+    await imapParser.disconnect()
+
+    console.log(`Total messages fetched: ${allMessages.length}`)
+
+    // Генеруємо звіт
+    const reportGenerator = new ReportGenerator({
+      supportEmails: options.supportEmails,
+      keywords: options.keywords,
+    })
+
+    const result = reportGenerator.processMessages(allMessages)
+
+    return {
+      success: true,
+      data: result.issues,
+      stats: result.stats,
+    }
+  } catch (error) {
+    console.error('IMAP parse error:', error)
     return {
       success: false,
       error: error.message,

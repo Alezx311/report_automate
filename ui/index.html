@@ -58,12 +58,15 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Папка:</label>
-            <select id="imap-folder">
-              <option value="INBOX">INBOX</option>
-            </select>
+            <label>Статус підключення:</label>
+            <div id="imap-status" class="connection-status">Не підключено</div>
           </div>
-          <button id="connect-imap-btn" class="btn btn-success">🔌 Підключитись</button>
+          <button id="test-imap-btn" class="btn btn-primary">🔍 Перевірити підключення</button>
+          <button id="select-folders-btn" class="btn btn-success" disabled>📁 Вибрати папки</button>
+          <div id="selected-folders-display" class="selected-folders" style="display: none">
+            <strong>Вибрані папки:</strong>
+            <ul id="selected-folders-list"></ul>
+          </div>
         </div>
 
         <!-- Jira Панель -->
@@ -132,22 +135,67 @@
           <h2>Звернення</h2>
           <div class="export-buttons">
             <button id="export-csv-btn" class="btn btn-primary">📥 Експорт в CSV</button>
-            <button id="export-jira-btn" class="btn btn-success">📤 Експорт в Jira</button>
+            <button id="export-jira-btn" class="btn btn-success">📤 Експорт in Jira</button>
           </div>
+        </div>
+        <div class="filters-panel">
+          <div class="filter-group">
+            <label>🔍 Пошук:</label>
+            <input type="text" id="filter-search" placeholder="Пошук по темі, опису..." />
+          </div>
+          <div class="filter-group">
+            <label>🏢 Система:</label>
+            <select id="filter-system">
+              <option value="">Всі системи</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>👤 Відповідальний:</label>
+            <select id="filter-responsible">
+              <option value="">Всі відповідальні</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>📋 Тип проблеми:</label>
+            <select id="filter-problem-type">
+              <option value="">Всі типи</option>
+            </select>
+          </div>
+          <button id="clear-filters-btn" class="btn btn-secondary btn-small">Очистити</button>
         </div>
         <div class="table-container">
           <table id="preview-table">
             <thead>
               <tr>
-                <th>Дата</th>
-                <th>Час</th>
-                <th>Система</th>
-                <th>Листів</th>
-                <th>Тема</th>
-                <th>Опис</th>
-                <th>Статус</th>
-                <th>Відповідальний</th>
-                <th>Важливість</th>
+                <th class="sortable" data-column="dateRegistered">
+                  Дата <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="timeRegistered">
+                  Час <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="system">
+                  Система <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="problemType">
+                  Тип проблеми <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="threadPosition">
+                  Позиція <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="subject">
+                  Тема <span class="sort-icon">⇅</span>
+                </th>
+                <th>Запит</th>
+                <th>Відповідь</th>
+                <th class="sortable" data-column="status">
+                  Статус <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="responsible">
+                  Відповідальний <span class="sort-icon">⇅</span>
+                </th>
+                <th class="sortable" data-column="importance">
+                  Важливість <span class="sort-icon">⇅</span>
+                </th>
               </tr>
             </thead>
             <tbody id="preview-body"></tbody>
@@ -159,6 +207,30 @@
       <div id="loading" class="loading" style="display: none">
         <div class="spinner"></div>
         <p>Обробка даних... Це може зайняти кілька хвилин.</p>
+      </div>
+    </div>
+
+    <!-- Модальне вікно вибору папок -->
+    <div id="folder-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Виберіть папки для парсингу</h2>
+          <button id="close-modal" class="btn-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="folder-search">
+            <input type="text" id="folder-search" placeholder="🔍 Пошук папок..." />
+          </div>
+          <div id="folders-loading" style="display: none">
+            <div class="spinner-small"></div>
+            <p>Завантаження папок...</p>
+          </div>
+          <div id="folders-list" class="folders-list"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-folders-btn" class="btn btn-secondary">Скасувати</button>
+          <button id="confirm-folders-btn" class="btn btn-success">Підтвердити вибір</button>
+        </div>
       </div>
     </div>
 

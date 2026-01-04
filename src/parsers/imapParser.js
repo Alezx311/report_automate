@@ -41,6 +41,77 @@ class ImapParser {
     }
   }
 
+  /**
+   * Тестування підключення без збереження з'єднання
+   */
+  async testConnection() {
+    return new Promise((resolve, reject) => {
+      const testImap = new Imap(this.config)
+
+      testImap.once('ready', () => {
+        testImap.end()
+        resolve({ success: true, message: 'Connection successful' })
+      })
+
+      testImap.once('error', err => {
+        reject(new Error(`Connection failed: ${err.message}`))
+      })
+
+      testImap.connect()
+    })
+  }
+
+  /**
+   * Отримання списку папок з статистикою
+   */
+  async getFoldersWithStats() {
+    if (!this.imap) {
+      await this.connect()
+    }
+
+    const folders = await this.listFolders()
+    const foldersWithStats = []
+
+    for (const folder of folders) {
+      try {
+        const stats = await this._getFolderStats(folder.name)
+        foldersWithStats.push({
+          ...folder,
+          ...stats,
+        })
+      } catch (err) {
+        console.warn(`Could not get stats for ${folder.name}:`, err.message)
+        foldersWithStats.push({
+          ...folder,
+          total: 0,
+          recent: 0,
+          unseen: 0,
+        })
+      }
+    }
+
+    return foldersWithStats
+  }
+
+  /**
+   * Отримання статистики для конкретної папки
+   */
+  _getFolderStats(folderName) {
+    return new Promise((resolve, reject) => {
+      this.imap.status(folderName, (err, box) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve({
+            total: box.messages || 0,
+            recent: box.recent || 0,
+            unseen: box.unseen || 0,
+          })
+        }
+      })
+    })
+  }
+
   async listFolders() {
     return new Promise((resolve, reject) => {
       this.imap.getBoxes((err, boxes) => {

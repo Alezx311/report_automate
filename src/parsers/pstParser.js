@@ -83,13 +83,21 @@ class PSTParser {
                       continue
                     }
 
+                    const bodyText = this.stripHtml(message.body || message.bodyHTML || '')
+
+                    // Extract email from body if not available in message properties
+                    let senderEmail = message.senderEmailAddress || message.sentRepresentingEmailAddress || ''
+                    if (!senderEmail || senderEmail.trim() === '') {
+                      senderEmail = this.extractEmailFromBody(bodyText)
+                    }
+
                     const msg = {
                       conversationId: message.conversationTopic || message.subject || 'unknown',
                       subject: message.subject || 'No Subject',
-                      senderEmail: message.senderEmailAddress || message.sentRepresentingEmailAddress || '',
+                      senderEmail: senderEmail,
                       senderName: message.senderName || message.sentRepresentingName || 'Unknown',
                       receivedDateTime: date,
-                      body: this.stripHtml(message.body || message.bodyHTML || ''),
+                      body: bodyText,
                       folderName: folder.displayName,
                     }
                     messages.push(msg)
@@ -188,6 +196,23 @@ class PSTParser {
     }
 
     return null
+  }
+
+  extractEmailFromBody(body) {
+    // Look for email in signature patterns
+    // Pattern 1: "Email: someone@domain.com"
+    const emailPattern1 = /Email:\s*([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i
+    const match1 = body.match(emailPattern1)
+    if (match1) return match1[1]
+
+    // Pattern 2: Find first email that looks like it's from the sender
+    // (before "From:" line which indicates forwarded content)
+    const beforeFrom = body.split(/\bFrom:/)[0]
+    const emailPattern2 = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i
+    const match2 = beforeFrom.match(emailPattern2)
+    if (match2) return match2[1]
+
+    return ''
   }
 }
 

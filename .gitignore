@@ -1,7 +1,11 @@
 #PST Files and outputs
-*.pst
+.claude/
+_dev/
 output/
-.env.example
+chunks/
+*.pst
+*.example
+nul
 
 # Environment variables
 .env
