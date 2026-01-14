@@ -949,3 +949,40 @@ tbody tr:hover {
   padding: 8px 16px;
   font-size: 14px;
 }
+
+/* ============================================
+   Checkbox styling
+   ============================================ */
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0;
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.checkbox-label span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.help-text {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 8px;
+  padding: 10px;
+  background: #fef3c7;
+  border-left: 3px solid #f59e0b;
+  border-radius: 4px;
+  line-height: 1.5;
+}

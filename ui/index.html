@@ -16,7 +16,7 @@
       <!-- Вибір джерела даних -->
       <div class="source-selector">
         <button id="source-pst" class="source-btn active">📁 PST Файл</button>
-        <button id="source-imap" class="source-btn">📧 Outlook IMAP</button>
+        <button id="source-graph" class="source-btn">☁️ Graph API</button>
         <button id="source-jira" class="source-btn">📋 Jira</button>
       </div>
 
@@ -32,40 +32,57 @@
               <button id="select-pst-btn" class="btn btn-primary">Вибрати файл</button>
             </div>
           </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="aggressive-clean" />
+              <span>Агресивне очищення тексту</span>
+            </label>
+            <div class="help-text">
+              Використовуйте тільки для пошкоджених PST файлів з неправильним кодуванням.
+              Видаляє змішані латиниця+кирилиця слова та garbage символи.
+            </div>
+          </div>
         </div>
 
-        <!-- IMAP Панель -->
-        <div id="imap-panel" class="source-panel" style="display: none">
-          <h3>Outlook IMAP</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email:</label>
-              <input type="email" id="imap-user" placeholder="your-email@company.com" />
-            </div>
-            <div class="form-group">
-              <label>App Password:</label>
-              <input type="password" id="imap-password" placeholder="xxxx-xxxx-xxxx-xxxx" />
-            </div>
+        <!-- Graph API Панель -->
+        <div id="graph-panel" class="source-panel" style="display: none">
+          <h3>Microsoft Graph API</h3>
+          <div class="help-text" style="margin-bottom: 15px; padding: 10px; background: #e3f2fd; border-left: 4px solid #2196f3;">
+            💡 <strong>Інструкція:</strong> Отримайте дані в Azure Portal (portal.azure.com) → Azure Active Directory → App registrations
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Host:</label>
-              <input type="text" id="imap-host" value="outlook.office365.com" />
+              <label>Tenant ID:</label>
+              <input type="text" id="graph-tenant" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
             </div>
             <div class="form-group">
-              <label>Port:</label>
-              <input type="number" id="imap-port" value="993" />
+              <label>Client ID:</label>
+              <input type="text" id="graph-client-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Client Secret:</label>
+            <input type="password" id="graph-client-secret" placeholder="Секрет з Azure Portal" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email користувача:</label>
+              <input type="email" id="graph-user" placeholder="your-email@company.com" />
+            </div>
+            <div class="form-group">
+              <label>Пароль:</label>
+              <input type="password" id="graph-password" placeholder="Пароль облікового запису" />
             </div>
           </div>
           <div class="form-group">
             <label>Статус підключення:</label>
-            <div id="imap-status" class="connection-status">Не підключено</div>
+            <div id="graph-status" class="connection-status">Не підключено</div>
           </div>
-          <button id="test-imap-btn" class="btn btn-primary">🔍 Перевірити підключення</button>
-          <button id="select-folders-btn" class="btn btn-success" disabled>📁 Вибрати папки</button>
-          <div id="selected-folders-display" class="selected-folders" style="display: none">
+          <button id="test-graph-btn" class="btn btn-primary">🔍 Перевірити підключення</button>
+          <button id="select-graph-folders-btn" class="btn btn-success" disabled>📁 Вибрати папки</button>
+          <div id="selected-graph-folders-display" class="selected-folders" style="display: none">
             <strong>Вибрані папки:</strong>
-            <ul id="selected-folders-list"></ul>
+            <ul id="selected-graph-folders-list"></ul>
           </div>
         </div>
 

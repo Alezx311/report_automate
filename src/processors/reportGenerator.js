@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const createCsvWriter = require('csv-writer').createObjectCsvWriter
+const TextCleaner = require('../utils/textCleaner')
 
 class ReportGenerator {
   constructor(options = {}) {
@@ -13,6 +14,9 @@ class ReportGenerator {
       .split(',')
       .map(k => k.trim().toLowerCase())
       .filter(k => k)
+
+    // Зберігаємо налаштування агресивного очищення
+    this.useAggressiveClean = options.useAggressiveClean || false
 
     this.systemsList = this._loadSystems()
 
@@ -30,37 +34,33 @@ class ReportGenerator {
    * Логіка: Кожна відповідь від техпідтримки в thread = окремий запис у звіті
    */
   processMessages(messages) {
-    console.log(`Processing ${messages.length} messages...`)
+    console.log(`Обробка ${messages.length} повідомлень...`)
 
-    // Group into threads
-    const threads = this._groupByThread(messages)
-    console.log(`Grouped into ${Object.keys(threads).length} threads`)
+    // Знайти ВСІ листи від support та їх conversationId
+    const supportMessages = messages.filter(msg => this._isFromSupport(msg.senderEmail))
+    const supportConversationIds = new Set(supportMessages.map(msg => msg.conversationId))
 
-    // DEBUG: показати supportEmails
-    console.log('DEBUG: supportEmails для перевірки:', this.supportEmails)
+    console.log(`Знайдено листів від support: ${supportMessages.length}`)
+    console.log(`Унікальних conversationId з листами від support: ${supportConversationIds.size}`)
+
+    // Відфільтрувати тільки повідомлення, які належать до conversations з support
+    const relevantMessages = messages.filter(msg => supportConversationIds.has(msg.conversationId))
+    console.log(`Релевантних повідомлень (включно з клієнтськими): ${relevantMessages.length}`)
+
+    // Групувати в threads тільки релевантні повідомлення
+    const threads = this._groupByThread(relevantMessages)
+    console.log(`Згруповано в threads: ${Object.keys(threads).length}`)
 
     const issues = []
 
-    Object.values(threads).forEach((thread, threadIdx) => {
+    Object.values(threads).forEach((thread) => {
       // Sort by time
       thread.sort((a, b) => new Date(a.receivedDateTime) - new Date(b.receivedDateTime))
 
-      // DEBUG: показати перший thread
-      if (threadIdx === 0) {
-        console.log('DEBUG: First thread messages:')
-        thread.forEach((msg, idx) => {
-          console.log(`  ${idx}. senderEmail="${msg.senderEmail}", isSupport=${this._isFromSupport(msg.senderEmail)}`)
-        })
-      }
-
-      // Check if thread has any support responses
+      // Get all support responses in thread
       const supportResponses = thread.filter(msg => this._isFromSupport(msg.senderEmail))
-      if (supportResponses.length === 0) {
-        // Skip threads without support responses
-        return
-      }
 
-      // Create ONE issue per support response (correct logic)
+      // Create ONE issue per support response
       supportResponses.forEach(responseMsg => {
         // Find the request message (last message before this support response)
         const responseIdx = thread.indexOf(responseMsg)
@@ -74,7 +74,7 @@ class ReportGenerator {
     // Statistics
     const stats = this._calculateStats(issues, Object.keys(threads).length)
 
-    console.log(`Created ${issues.length} issues`)
+    console.log(`Створено звернень: ${issues.length}`)
 
     return { issues, stats }
   }
@@ -158,6 +158,7 @@ class ReportGenerator {
         { id: 'source', title: 'Джерело' },
       ],
       encoding: 'utf8',
+      append: false, // Створюємо новий файл з headers
     })
 
     await csvWriter.writeRecords(issues)
@@ -186,7 +187,18 @@ class ReportGenerator {
   _isFromSupport(email) {
     if (!email) return false
     const lowerEmail = email.toLowerCase()
-    return this.supportEmails.some(supportEmail => lowerEmail.includes(supportEmail.toLowerCase()))
+
+    return this.supportEmails.some(supportEmail => {
+      const lowerSupportEmail = supportEmail.toLowerCase()
+
+      // Якщо supportEmail починається з @, перевіряємо домен
+      if (lowerSupportEmail.startsWith('@')) {
+        return lowerEmail.endsWith(lowerSupportEmail)
+      }
+
+      // Інакше перевіряємо чи email містить supportEmail
+      return lowerEmail.includes(lowerSupportEmail)
+    })
   }
 
   /**
@@ -397,134 +409,11 @@ class ReportGenerator {
 
   /**
    * Очищення тексту листа від зайвої інформації
+   * Використовує TextCleaner з можливістю вибору базового або агресивного режиму
    */
   _cleanEmailBody(body) {
-    if (!body) return ''
-
-    let cleaned = body
-
-    // 0. СПОЧАТКУ видаляємо HTML та CSS (найважливіше!)
-    cleaned = cleaned
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '') // <style> блоки
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '') // <script> блоки
-      .replace(/<[^>]+>/g, ' ') // Всі HTML теги
-      .replace(/&nbsp;/g, ' ') // &nbsp;
-      .replace(/&[a-z]+;/gi, ' ') // HTML entities
-      .replace(/&#\d+;/g, ' ') // Числові entities
-      .replace(/&#x[0-9a-f]+;/gi, ' ') // Hex entities
-
-    // 0.1. Видаляємо VML CSS декларації
-    cleaned = cleaned
-      .replace(/[vow]\\:\*\s*\{[^}]*\}/gi, '') // v\:* {...}, o\:* {...}, w\:* {...}
-      .replace(/\.shape\s*\{[^}]*\}/gi, '') // .shape {...}
-      .replace(/\{behavior:url\([^)]*\);\}/gi, '') // {behavior:url(...);}
-      .replace(/behavior:\s*url\([^)]*\)/gi, '') // behavior:url(...)
-
-    // 0.2. Видаляємо VML namespace символи
-    cleaned = cleaned
-      .replace(/[vow]\\:\*/gi, '') // v\:*, o\:*, w\:*
-      .replace(/[a-z]\\:/gi, '') // будь-які літери з \:
-
-    // 0.3. Видаляємо пошкоджені Unicode символи
-    cleaned = cleaned.replace(/[\ud800-\udfff]/g, '') // Surrogate pairs (поганий Unicode)
-
-    // 0.4. Видаляємо null-байти та інший binary garbage
-    cleaned = cleaned.replace(/\u0000/g, '') // Null bytes
-    cleaned = cleaned.replace(/[\u0001-\u0008\u000B\u000C\u000E-\u001F]/g, '') // Control characters
-
-    // 0.5. Видаляємо послідовності незрозумілих non-ASCII символів
-    // Якщо в слові більше 3 підряд символів не латиниці/кирилиці/цифр - видаляємо все слово
-    cleaned = cleaned.replace(/\b[^\s]*[^\x00-\x7F\u0400-\u04FF\u0020-\u007E]{4,}[^\s]*\b/g, '')
-
-    // 0.6. Видаляємо залишки RTF та спеціальних символів
-    cleaned = cleaned.replace(/\\u\d{4}/g, '') // \uXXXX sequences
-    cleaned = cleaned.replace(/\\x[0-9a-f]{2}/gi, '') // \xXX sequences
-
-    // 0.7. Видаляємо HTML entity залишки (nbsp, quot, amp, lt, gt тощо)
-    cleaned = cleaned.replace(/\b(nbsp|quot|amp|lt|gt|apos)\b/gi, ' ')
-    cleaned = cleaned.replace(/[;:]p>/gi, '') // Залишки типу ":p>" або ";p>"
-    cleaned = cleaned.replace(/o:p>/gi, '') // Залишки o:p>
-
-    // 1. Видаляємо попередження про зовнішній лист
-    cleaned = cleaned.replace(
-      /УВАГА!\s*[–-]\s*Зовнішній лист:.*?не очікували цього листа\.\s*/gi,
-      ''
-    )
-
-    // 2. Видаляємо email headers (From:, Sent:, To:, Cc:, Subject:)
-    cleaned = cleaned.replace(/From:\s*[^\n]+\n/gi, '')
-    cleaned = cleaned.replace(/Sent:\s*[^\n]+\n/gi, '')
-    cleaned = cleaned.replace(/To:\s*[^\n]+\n/gi, '')
-    cleaned = cleaned.replace(/Cc:\s*[^\n]+\n/gi, '')
-    cleaned = cleaned.replace(/Subject:\s*[^\n]+\n/gi, '')
-
-    // 3. Видаляємо email підписи (телефони, email, посади)
-    cleaned = cleaned.replace(/Phone\s*:\s*\+?[\d\s()]+/gi, '')
-    cleaned = cleaned.replace(/Email\s*:\s*[\w.+-]+@[\w.-]+/gi, '')
-    cleaned = cleaned.replace(/Website\s*:\s*[\w.:/-]+/gi, '')
-    cleaned = cleaned.replace(/тел\.?\s*:\s*\+?[\d\s()]+/gi, '')
-    cleaned = cleaned.replace(/тел\.?\s*внутрішній\s*:\s*\d+/gi, '')
-    cleaned = cleaned.replace(/моб\.?\s*тел\.?\s*:\s*\+?[\d\s()]+/gi, '')
-
-    // 4. Видаляємо імена з підписів (Dmytro Sandul, Nikita Chychykalo тощо)
-    cleaned = cleaned.replace(/\b(Dmytro|Nikita|Dmytro_Sandul|Молойко|Руденко|Міщевський|Антушевич|Дмитренко|Мохамед|Лур'є)\b[^\n]*/gi, '')
-
-    // 5. Видаляємо типові посади
-    cleaned = cleaned.replace(/Technical\s+Support\s+Manager/gi, '')
-    cleaned = cleaned.replace(/Головний\s+фахівець[^\n]*/gi, '')
-    cleaned = cleaned.replace(/\b(Manager|Developer|Head|Керівник|Менеджер|фахівець)\b/gi, '')
-
-    // 6. Видаляємо посади та контактну інформацію з підписів
-    cleaned = cleaned.replace(
-      /[A-Z][a-z]+\s+[A-Z][a-z]+\s*\|\s*[\w\s]+(?:Manager|Developer|Head|Керівник|Менеджер)[^\n]*/gi,
-      ''
-    )
-
-    // 7. Видаляємо лінії-розділювачі
-    cleaned = cleaned.replace(/__{10,}/g, '')
-    cleaned = cleaned.replace(/_{5,}/g, '')
-
-    // 8. Видаляємо стандартні фрази "З повагою"
-    cleaned = cleaned.replace(/З повагою,?\s*[\w\s]+/gi, '')
-
-    // 9. Видаляємо адреси
-    cleaned = cleaned.replace(/вул\.\s*[\w\s,]+\d+/gi, '')
-    cleaned = cleaned.replace(/Київ,\s*\d{5}/gi, '')
-    cleaned = cleaned.replace(/Україна/gi, '')
-
-    // 10. Видаляємо цитування попередніх листів (після "From:" або ">")
-    const lines = cleaned.split('\n')
-    const filteredLines = []
-    let inQuote = false
-
-    for (const line of lines) {
-      // Якщо знайшли "From:" - це початок цитування
-      if (/^From:\s*/i.test(line)) {
-        inQuote = true
-        continue
-      }
-      // Якщо рядок починається з ">" - це цитування
-      if (/^\s*>/.test(line)) {
-        continue
-      }
-      // Якщо не в цитуванні - додаємо рядок
-      if (!inQuote) {
-        filteredLines.push(line)
-      }
-    }
-
-    cleaned = filteredLines.join('\n')
-
-    // 11. Очищаємо множинні порожні рядки
-    cleaned = cleaned.replace(/\n{3,}/g, '\n\n')
-
-    // 12. Видаляємо множинні пробіли
-    cleaned = cleaned.replace(/\s{3,}/g, ' ')
-
-    // 13. Обрізаємо зайві пробіли
-    cleaned = cleaned.trim()
-
-    return cleaned
+    // Використовуємо TextCleaner з налаштуваннями агресивного очищення
+    return TextCleaner.clean(body, this.useAggressiveClean)
   }
 
   /**

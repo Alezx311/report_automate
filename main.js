@@ -5,7 +5,7 @@ require('dotenv').config()
 
 // Парсери та клієнти
 const PSTParser = require('./src/parsers/pstParser')
-const ImapParser = require('./src/parsers/imapParser')
+const GraphApiParser = require('./src/parsers/graphApiParser')
 const JiraClient = require('./src/integrations/jiraClient')
 const ReportGenerator = require('./src/processors/reportGenerator')
 
@@ -105,25 +105,9 @@ ipcMain.handle('parse-pst', async (event, options) => {
     }
 
     // Інакше це PST файл - стандартна обробка
-    console.log('Starting PST file parsing...')
-    console.log(
-      'DEBUG: Parse options:',
-      JSON.stringify(
-        {
-          pstPath: options.pstPath,
-          supportEmails: options.supportEmails,
-          keywords: options.keywords,
-          startDate: options.startDate,
-          endDate: options.endDate,
-          batchSize: options.batchSize || 100,
-        },
-        null,
-        2,
-      ),
-    )
+    console.log('Початок парсингу PST файлу...')
 
     const pstParser = new PSTParser(options.pstPath)
-    console.log('DEBUG: PSTParser created')
 
     const messages = await pstParser.extractMessages({
       startDate: options.startDate,
@@ -131,29 +115,13 @@ ipcMain.handle('parse-pst', async (event, options) => {
       batchSize: options.batchSize || 100,
     })
 
-    console.log(`Received ${messages.length} messages`)
-    console.log(
-      'DEBUG: First message (if any):',
-      messages.length > 0 ? JSON.stringify(messages[0], null, 2) : 'No messages',
-    )
-    console.log(
-      'DEBUG: Last message (if any):',
-      messages.length > 1 ? JSON.stringify(messages[messages.length - 1], null, 2) : 'Only one or none',
-    )
-
     const reportGenerator = new ReportGenerator({
       supportEmails: options.supportEmails,
       keywords: options.keywords,
+      useAggressiveClean: options.useAggressiveClean || false,
     })
-    console.log('DEBUG: ReportGenerator created')
 
-    console.log('DEBUG: Starting message processing...')
     const { issues, stats } = reportGenerator.processMessages(messages)
-
-    console.log('DEBUG: Processing result:')
-    console.log('  - Found issues:', issues.length)
-    console.log('  - Statistics:', JSON.stringify(stats, null, 2))
-    console.log('DEBUG: First issue (if any):', issues.length > 0 ? JSON.stringify(issues[0], null, 2) : 'No issues')
 
     return {
       success: true,
@@ -170,84 +138,7 @@ ipcMain.handle('parse-pst', async (event, options) => {
   }
 })
 
-// ============================================
-// Підключення до IMAP
-// ============================================
 
-ipcMain.handle('connect-imap', async (event, config) => {
-  try {
-    console.log('Connecting to IMAP...')
-
-    const imapParser = new ImapParser({
-      user: config.user || process.env.OUTLOOK_IMAP_USER,
-      password: config.password || process.env.OUTLOOK_IMAP_PASSWORD,
-      host: config.host || process.env.OUTLOOK_IMAP_HOST || 'outlook.office365.com',
-      port: config.port || process.env.OUTLOOK_IMAP_PORT || 993,
-    })
-
-    await imapParser.connect()
-    const folders = await imapParser.listFolders()
-    await imapParser.disconnect()
-
-    return {
-      success: true,
-      folders: folders.map(f => f.name),
-    }
-  } catch (error) {
-    console.error('IMAP error:', error)
-    return {
-      success: false,
-      error: error.message,
-    }
-  }
-})
-
-// ipcMain.handle('parse-imap', async (event, options) => {
-//   let imapParser = null
-
-//   try {
-//     console.log('Loading emails via IMAP...')
-
-//     imapParser = new ImapParser({
-//       user: options.user || process.env.OUTLOOK_IMAP_USER,
-//       password: options.password || process.env.OUTLOOK_IMAP_PASSWORD,
-//       host: options.host || process.env.OUTLOOK_IMAP_HOST,
-//       port: options.port || process.env.OUTLOOK_IMAP_PORT,
-//     })
-
-//     await imapParser.connect()
-
-//     const messages = await imapParser.fetchEmails({
-//       folder: options.folder || 'INBOX',
-//       startDate: options.startDate,
-//       endDate: options.endDate,
-//     })
-
-//     await imapParser.disconnect()
-
-//     console.log(`Received ${messages.length} messages`)
-
-//     const reportGenerator = new ReportGenerator({
-//       supportEmails: options.supportEmails,
-//       keywords: options.keywords,
-//     })
-
-//     const { issues, stats } = reportGenerator.processMessages(messages)
-
-//     return {
-//       success: true,
-//       data: issues,
-//       stats,
-//     }
-//   } catch (error) {
-//     console.error('IMAP parsing error:', error)
-//     if (imapParser) await imapParser.disconnect()
-//     return {
-//       success: false,
-//       error: error.message,
-//     }
-//   }
-// })
 
 // ============================================
 // Робота з Jira
@@ -380,25 +271,26 @@ ipcMain.handle('export-csv', async (event, issues) => {
   }
 })
 
+
 // ============================================
-// IMAP - Тестування підключення
+// Microsoft Graph API - Тестування підключення
 // ============================================
 
-ipcMain.handle('test-imap-connection', async (event, credentials) => {
+ipcMain.handle('test-graph-connection', async (event, credentials) => {
   try {
-    console.log('Testing IMAP connection...')
-    const imapParser = new ImapParser({
-      user: credentials.user,
-      password: credentials.password,
-      host: credentials.host || 'outlook.office365.com',
-      port: credentials.port || 993,
-      tls: credentials.tls !== false,
+    console.log('Testing Graph API connection...')
+    const graphParser = new GraphApiParser({
+      tenant: credentials.tenant || process.env.AZURE_TENANT_ID,
+      clientId: credentials.clientId || process.env.AZURE_CLIENT_ID,
+      clientSecret: credentials.clientSecret || process.env.AZURE_CLIENT_SECRET,
+      user: credentials.user || process.env.GRAPH_API_USER,
+      password: credentials.password || process.env.GRAPH_API_PASSWORD,
     })
 
-    const result = await imapParser.testConnection()
+    const result = await graphParser.testConnection()
     return result
   } catch (error) {
-    console.error('IMAP test error:', error)
+    console.error('Graph API test error:', error)
     return {
       success: false,
       error: error.message,
@@ -407,30 +299,28 @@ ipcMain.handle('test-imap-connection', async (event, credentials) => {
 })
 
 // ============================================
-// IMAP - Отримання списку папок
+// Microsoft Graph API - Отримання списку папок
 // ============================================
 
-ipcMain.handle('get-imap-folders', async (event, credentials) => {
+ipcMain.handle('get-graph-folders', async (event, credentials) => {
   try {
-    console.log('Getting IMAP folders...')
-    const imapParser = new ImapParser({
-      user: credentials.user,
-      password: credentials.password,
-      host: credentials.host || 'outlook.office365.com',
-      port: credentials.port || 993,
-      tls: credentials.tls !== false,
+    console.log('Getting Graph API folders...')
+    const graphParser = new GraphApiParser({
+      tenant: credentials.tenant || process.env.AZURE_TENANT_ID,
+      clientId: credentials.clientId || process.env.AZURE_CLIENT_ID,
+      clientSecret: credentials.clientSecret || process.env.AZURE_CLIENT_SECRET,
+      user: credentials.user || process.env.GRAPH_API_USER,
+      password: credentials.password || process.env.GRAPH_API_PASSWORD,
     })
 
-    await imapParser.connect()
-    const folders = await imapParser.getFoldersWithStats()
-    await imapParser.disconnect()
+    const folders = await graphParser.getFoldersWithStats()
 
     return {
       success: true,
       folders,
     }
   } catch (error) {
-    console.error('IMAP folders error:', error)
+    console.error('Graph API folders error:', error)
     return {
       success: false,
       error: error.message,
@@ -439,27 +329,27 @@ ipcMain.handle('get-imap-folders', async (event, credentials) => {
 })
 
 // ============================================
-// IMAP - Парсинг листів з вибраних папок
+// Microsoft Graph API - Парсинг листів з вибраних папок
 // ============================================
 
-ipcMain.handle('parse-imap', async (event, options) => {
+ipcMain.handle('parse-graph', async (event, options) => {
   try {
-    console.log('Starting IMAP parsing...')
-    const imapParser = new ImapParser({
-      user: options.user,
-      password: options.password,
-      host: options.host || 'outlook.office365.com',
-      port: options.port || 993,
-      tls: options.tls !== false,
+    console.log('Starting Graph API parsing...')
+    const graphParser = new GraphApiParser({
+      tenant: options.tenant || process.env.AZURE_TENANT_ID,
+      clientId: options.clientId || process.env.AZURE_CLIENT_ID,
+      clientSecret: options.clientSecret || process.env.AZURE_CLIENT_SECRET,
+      user: options.user || process.env.GRAPH_API_USER,
+      password: options.password || process.env.GRAPH_API_PASSWORD,
     })
 
-    await imapParser.connect()
+    await graphParser.connect()
 
     // Витягуємо листи з кожної вибраної папки
     let allMessages = []
     for (const folder of options.folders) {
       console.log(`Fetching from folder: ${folder}`)
-      const messages = await imapParser.fetchEmails({
+      const messages = await graphParser.fetchEmails({
         folder,
         startDate: options.startDate,
         endDate: options.endDate,
@@ -467,7 +357,7 @@ ipcMain.handle('parse-imap', async (event, options) => {
       allMessages = allMessages.concat(messages)
     }
 
-    await imapParser.disconnect()
+    await graphParser.disconnect()
 
     console.log(`Total messages fetched: ${allMessages.length}`)
 
@@ -485,7 +375,7 @@ ipcMain.handle('parse-imap', async (event, options) => {
       stats: result.stats,
     }
   } catch (error) {
-    console.error('IMAP parse error:', error)
+    console.error('Graph API parse error:', error)
     return {
       success: false,
       error: error.message,
@@ -503,12 +393,13 @@ ipcMain.handle('load-config', async () => {
       success: true,
       config: {
         supportEmails: process.env.SUPPORT_EMAILS || '',
-        outlookHost: process.env.OUTLOOK_IMAP_HOST || 'outlook.office365.com',
-        outlookPort: process.env.OUTLOOK_IMAP_PORT || '993',
-        outlookUser: process.env.OUTLOOK_IMAP_USER || '',
         jiraHost: process.env.JIRA_HOST || '',
         jiraProject: process.env.JIRA_PROJECT_KEY || 'SUPPORT',
         jiraEmail: process.env.JIRA_EMAIL || '',
+        // Graph API
+        azureTenant: process.env.AZURE_TENANT_ID || '',
+        azureClientId: process.env.AZURE_CLIENT_ID || '',
+        graphUser: process.env.GRAPH_API_USER || '',
       },
     }
   } catch (error) {

@@ -1,17 +1,17 @@
 // Глобальні змінні
 let parsedData = null
-let selectedSource = 'pst' // 'pst', 'imap', 'jira'
+let selectedSource = 'pst' // 'pst', 'graph', 'jira'
 
 // Елементи UI
 const sourceButtons = {
   pst: document.getElementById('source-pst'),
-  imap: document.getElementById('source-imap'),
+  graph: document.getElementById('source-graph'),
   jira: document.getElementById('source-jira'),
 }
 
 const sourcePanels = {
   pst: document.getElementById('pst-panel'),
-  imap: document.getElementById('imap-panel'),
+  graph: document.getElementById('graph-panel'),
   jira: document.getElementById('jira-panel'),
 }
 
@@ -50,12 +50,13 @@ async function init() {
 
       // Заповнюємо поля з .env
       document.getElementById('support-emails').value = result.config.supportEmails
-      document.getElementById('imap-user').value = result.config.outlookUser
-      document.getElementById('imap-host').value = result.config.outlookHost
-      document.getElementById('imap-port').value = result.config.outlookPort
       document.getElementById('jira-host').value = result.config.jiraHost
       document.getElementById('jira-email').value = result.config.jiraEmail
       document.getElementById('jira-project').value = result.config.jiraProject
+      // Graph API
+      document.getElementById('graph-tenant').value = result.config.azureTenant
+      document.getElementById('graph-client-id').value = result.config.azureClientId
+      document.getElementById('graph-user').value = result.config.graphUser
     } else {
       console.warn('Помилка завантаження конфігурації:', result.error)
     }
@@ -85,13 +86,13 @@ function setupEventListeners() {
   // PST
   document.getElementById('select-pst-btn').addEventListener('click', selectPSTFile)
 
-  // IMAP
-  document.getElementById('test-imap-btn').addEventListener('click', testIMAPConnection)
-  document.getElementById('select-folders-btn').addEventListener('click', showFolderModal)
+  // Graph API
+  document.getElementById('test-graph-btn').addEventListener('click', testGraphConnection)
+  document.getElementById('select-graph-folders-btn').addEventListener('click', showGraphFolderModal)
   document.getElementById('close-modal').addEventListener('click', closeFolderModal)
   document.getElementById('cancel-folders-btn').addEventListener('click', closeFolderModal)
   document.getElementById('confirm-folders-btn').addEventListener('click', confirmFolderSelection)
-  document.getElementById('folder-search').addEventListener('input', filterFolders)
+  document.getElementById('folder-search').addEventListener('input', filterGraphFolders)
 
   // Jira
   document.getElementById('connect-jira-btn').addEventListener('click', connectJira)
@@ -158,17 +159,17 @@ async function selectPSTFile() {
 }
 
 // ============================================
-// IMAP
+// Graph API
 // ============================================
 
-let availableFolders = []
-let selectedFolders = []
-let imapConnected = false
+let availableGraphFolders = []
+let selectedGraphFolders = []
+let graphConnected = false
 
-async function testIMAPConnection() {
-  const btn = document.getElementById('test-imap-btn')
-  const statusDiv = document.getElementById('imap-status')
-  const selectBtn = document.getElementById('select-folders-btn')
+async function testGraphConnection() {
+  const btn = document.getElementById('test-graph-btn')
+  const statusDiv = document.getElementById('graph-status')
+  const selectBtn = document.getElementById('select-graph-folders-btn')
   const originalText = btn.textContent
 
   try {
@@ -178,36 +179,37 @@ async function testIMAPConnection() {
     statusDiv.className = 'connection-status'
 
     const credentials = {
-      user: document.getElementById('imap-user').value,
-      password: document.getElementById('imap-password').value,
-      host: document.getElementById('imap-host').value,
-      port: parseInt(document.getElementById('imap-port').value),
+      tenant: document.getElementById('graph-tenant').value,
+      clientId: document.getElementById('graph-client-id').value,
+      clientSecret: document.getElementById('graph-client-secret').value,
+      user: document.getElementById('graph-user').value,
+      password: document.getElementById('graph-password').value,
     }
 
-    if (!credentials.user || !credentials.password) {
-      alert('Введіть email та пароль для IMAP')
+    if (!credentials.tenant || !credentials.clientId || !credentials.clientSecret || !credentials.user || !credentials.password) {
+      alert('Заповніть всі поля для Graph API')
       statusDiv.textContent = 'Не підключено'
       statusDiv.className = 'connection-status error'
       return
     }
 
-    const result = await window.electronAPI.testIMAPConnection(credentials)
+    const result = await window.electronAPI.testGraphConnection(credentials)
 
     if (result.success) {
-      imapConnected = true
-      statusDiv.textContent = '✓ Підключено успішно'
+      graphConnected = true
+      statusDiv.textContent = `✓ Підключено як ${result.user}`
       statusDiv.className = 'connection-status connected'
       selectBtn.disabled = false
-      alert('Підключення успішне!\nТепер можна вибрати папки для парсингу.')
+      alert(`Підключення успішне!\nКористувач: ${result.displayName || result.user}\nТепер можна вибрати папки для парсингу.`)
     } else {
-      imapConnected = false
+      graphConnected = false
       statusDiv.textContent = '✗ Помилка підключення'
       statusDiv.className = 'connection-status error'
       alert('Помилка підключення:\n\n' + result.error)
     }
   } catch (error) {
-    imapConnected = false
-    console.error('Помилка IMAP:', error)
+    graphConnected = false
+    console.error('Помилка Graph API:', error)
     statusDiv.textContent = '✗ Помилка'
     statusDiv.className = 'connection-status error'
     alert('Помилка: ' + error.message)
@@ -217,7 +219,7 @@ async function testIMAPConnection() {
   }
 }
 
-async function showFolderModal() {
+async function showGraphFolderModal() {
   const modal = document.getElementById('folder-modal')
   const loadingDiv = document.getElementById('folders-loading')
   const foldersList = document.getElementById('folders-list')
@@ -228,17 +230,18 @@ async function showFolderModal() {
 
   try {
     const credentials = {
-      user: document.getElementById('imap-user').value,
-      password: document.getElementById('imap-password').value,
-      host: document.getElementById('imap-host').value,
-      port: parseInt(document.getElementById('imap-port').value),
+      tenant: document.getElementById('graph-tenant').value,
+      clientId: document.getElementById('graph-client-id').value,
+      clientSecret: document.getElementById('graph-client-secret').value,
+      user: document.getElementById('graph-user').value,
+      password: document.getElementById('graph-password').value,
     }
 
-    const result = await window.electronAPI.getIMAPFolders(credentials)
+    const result = await window.electronAPI.getGraphFolders(credentials)
 
     if (result.success) {
-      availableFolders = result.folders
-      renderFolders(availableFolders)
+      availableGraphFolders = result.folders
+      renderGraphFolders(availableGraphFolders)
     } else {
       alert('Помилка отримання папок:\n\n' + result.error)
       closeFolderModal()
@@ -252,21 +255,21 @@ async function showFolderModal() {
   }
 }
 
-function renderFolders(folders) {
+function renderGraphFolders(folders) {
   const foldersList = document.getElementById('folders-list')
   foldersList.innerHTML = ''
 
   folders.forEach(folder => {
     const item = document.createElement('div')
     item.className = 'folder-item'
-    if (selectedFolders.includes(folder.name)) {
+    if (selectedGraphFolders.includes(folder.name)) {
       item.classList.add('selected')
     }
 
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
-    checkbox.checked = selectedFolders.includes(folder.name)
-    checkbox.addEventListener('change', () => toggleFolderSelection(folder.name, checkbox.checked))
+    checkbox.checked = selectedGraphFolders.includes(folder.name)
+    checkbox.addEventListener('change', () => toggleGraphFolderSelection(folder.name, checkbox.checked))
 
     const info = document.createElement('div')
     info.className = 'folder-info'
@@ -277,7 +280,7 @@ function renderFolders(folders) {
 
     const stats = document.createElement('div')
     stats.className = 'folder-stats'
-    stats.textContent = `${folder.total || 0} листів (${folder.unseen || 0} непрочитаних)`
+    stats.textContent = `${folder.totalItemCount || 0} листів (${folder.unreadItemCount || 0} непрочитаних)`
 
     info.appendChild(name)
     info.appendChild(stats)
@@ -288,7 +291,7 @@ function renderFolders(folders) {
     item.addEventListener('click', e => {
       if (e.target !== checkbox) {
         checkbox.checked = !checkbox.checked
-        toggleFolderSelection(folder.name, checkbox.checked)
+        toggleGraphFolderSelection(folder.name, checkbox.checked)
       }
     })
 
@@ -296,22 +299,21 @@ function renderFolders(folders) {
   })
 }
 
-function toggleFolderSelection(folderName, selected) {
-  if (selected) {
-    if (!selectedFolders.includes(folderName)) {
-      selectedFolders.push(folderName)
+function toggleGraphFolderSelection(folderName, isSelected) {
+  if (isSelected) {
+    if (!selectedGraphFolders.includes(folderName)) {
+      selectedGraphFolders.push(folderName)
     }
   } else {
-    selectedFolders = selectedFolders.filter(f => f !== folderName)
+    selectedGraphFolders = selectedGraphFolders.filter(f => f !== folderName)
   }
 
   // Update visual state
   const items = document.querySelectorAll('.folder-item')
   items.forEach(item => {
-    const checkbox = item.querySelector('input[type="checkbox"]')
     const folderNameEl = item.querySelector('.folder-name')
     if (folderNameEl && folderNameEl.textContent === folderName) {
-      if (selected) {
+      if (isSelected) {
         item.classList.add('selected')
       } else {
         item.classList.remove('selected')
@@ -320,13 +322,13 @@ function toggleFolderSelection(folderName, selected) {
   })
 }
 
-function filterFolders() {
+function filterGraphFolders() {
   const searchInput = document.getElementById('folder-search')
   const searchText = searchInput.value.toLowerCase()
 
-  const filtered = availableFolders.filter(folder => folder.name.toLowerCase().includes(searchText))
+  const filtered = availableGraphFolders.filter(folder => folder.name.toLowerCase().includes(searchText))
 
-  renderFolders(filtered)
+  renderGraphFolders(filtered)
 }
 
 function closeFolderModal() {
@@ -335,17 +337,17 @@ function closeFolderModal() {
 }
 
 function confirmFolderSelection() {
-  if (selectedFolders.length === 0) {
+  if (selectedGraphFolders.length === 0) {
     alert('Виберіть хоча б одну папку')
     return
   }
 
   // Update UI with selected folders
-  const display = document.getElementById('selected-folders-display')
-  const list = document.getElementById('selected-folders-list')
+  const display = document.getElementById('selected-graph-folders-display')
+  const list = document.getElementById('selected-graph-folders-list')
 
   list.innerHTML = ''
-  selectedFolders.forEach(folder => {
+  selectedGraphFolders.forEach(folder => {
     const li = document.createElement('li')
     li.textContent = folder
     list.appendChild(li)
@@ -355,7 +357,7 @@ function confirmFolderSelection() {
   parseBtn.disabled = false
 
   closeFolderModal()
-  alert(`Вибрано ${selectedFolders.length} папок для парсингу`)
+  alert(`Вибрано ${selectedGraphFolders.length} папок для парсингу`)
 }
 
 // ============================================
@@ -417,9 +419,9 @@ async function startParsing() {
     if (selectedSource === 'pst') {
       console.log('DEBUG: Викликаємо parsePST()')
       result = await parsePST()
-    } else if (selectedSource === 'imap') {
-      console.log('DEBUG: Викликаємо parseIMAP()')
-      result = await parseIMAP()
+    } else if (selectedSource === 'graph') {
+      console.log('DEBUG: Викликаємо parseGraph()')
+      result = await parseGraph()
     } else if (selectedSource === 'jira') {
       console.log('DEBUG: Викликаємо parseJira()')
       result = await parseJira()
@@ -459,6 +461,7 @@ async function parsePST() {
     keywords: document.getElementById('keywords').value,
     startDate: document.getElementById('start-date').value,
     endDate: document.getElementById('end-date').value,
+    useAggressiveClean: document.getElementById('aggressive-clean').checked,
     batchSize: 100,
   }
 
@@ -468,6 +471,7 @@ async function parsePST() {
     keywords: options.keywords,
     startDate: options.startDate,
     endDate: options.endDate,
+    useAggressiveClean: options.useAggressiveClean,
     batchSize: options.batchSize,
   })
 
@@ -482,29 +486,30 @@ async function parsePST() {
   return result
 }
 
-async function parseIMAP() {
-  if (selectedFolders.length === 0) {
+async function parseGraph() {
+  if (selectedGraphFolders.length === 0) {
     throw new Error('Виберіть хоча б одну папку для парсингу')
   }
 
   const options = {
-    user: document.getElementById('imap-user').value,
-    password: document.getElementById('imap-password').value,
-    host: document.getElementById('imap-host').value,
-    port: parseInt(document.getElementById('imap-port').value),
-    folders: selectedFolders,
+    tenant: document.getElementById('graph-tenant').value,
+    clientId: document.getElementById('graph-client-id').value,
+    clientSecret: document.getElementById('graph-client-secret').value,
+    user: document.getElementById('graph-user').value,
+    password: document.getElementById('graph-password').value,
+    folders: selectedGraphFolders,
     supportEmails: document.getElementById('support-emails').value,
     keywords: document.getElementById('keywords').value,
     startDate: document.getElementById('start-date').value,
     endDate: document.getElementById('end-date').value,
   }
 
-  if (!options.user || !options.password) {
-    throw new Error('Введіть credentials для IMAP')
+  if (!options.tenant || !options.clientId || !options.clientSecret || !options.user || !options.password) {
+    throw new Error('Заповніть всі поля для Graph API')
   }
 
-  console.log(`Парсинг з IMAP: ${selectedFolders.length} папок`)
-  return await window.electronAPI.parseIMAP(options)
+  console.log(`Парсинг з Graph API: ${selectedGraphFolders.length} папок`)
+  return await window.electronAPI.parseGraph(options)
 }
 
 async function parseJira() {

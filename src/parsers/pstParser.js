@@ -1,5 +1,6 @@
 const fs = require('fs')
 const PST = require('pst-parser')
+const TextCleaner = require('../utils/textCleaner')
 
 class PSTParser {
   constructor(pstPath) {
@@ -83,7 +84,8 @@ class PSTParser {
                       continue
                     }
 
-                    const bodyText = this.stripHtml(message.body || message.bodyHTML || '')
+                    // Використовуємо базове очищення для отримання тексту з HTML
+                    const bodyText = TextCleaner.basicClean(message.body || message.bodyHTML || '')
 
                     // Extract email from body if not available in message properties
                     let senderEmail = message.senderEmailAddress || message.sentRepresentingEmailAddress || ''
@@ -139,23 +141,9 @@ class PSTParser {
 
     processFolder(rootFolder)
 
-    console.log(`Complete. Found ${messages.length} messages`)
+    console.log(`Завершено. Знайдено ${messages.length} повідомлень`)
 
     return messages
-  }
-
-  stripHtml(html) {
-    if (!html) return ''
-
-    return html
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/\s+/g, ' ')
-      .trim()
   }
 
   extractDateFromBody(body, bodyHTML) {
@@ -199,18 +187,36 @@ class PSTParser {
   }
 
   extractEmailFromBody(body) {
-    // Look for email in signature patterns
-    // Pattern 1: "Email: someone@domain.com"
-    const emailPattern1 = /Email:\s*([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i
-    const match1 = body.match(emailPattern1)
-    if (match1) return match1[1]
+    if (!body) return ''
 
-    // Pattern 2: Find first email that looks like it's from the sender
-    // (before "From:" line which indicates forwarded content)
-    const beforeFrom = body.split(/\bFrom:/)[0]
-    const emailPattern2 = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i
-    const match2 = beforeFrom.match(emailPattern2)
-    if (match2) return match2[1]
+    // Стратегія: Шукаємо email в ПІДПИСІ, а не в forwarded headers
+    // Підпис зазвичай знаходиться ПЕРЕД "From:" header (якщо лист forwarded)
+
+    // Розділяємо на частини по "From:" (щоб відокремити forwarded headers)
+    const parts = body.split(/From:/i)
+
+    // Якщо є forwarded content (більше 1 частини), беремо ПЕРШУ частину (до headers)
+    // Це буде містити підпис РЕАЛЬНОГО відправника
+    const actualContent = parts[0]
+
+    // Pattern 1: Email в підписі з вертикальною рискою (наприклад: "Name | email@domain.com")
+    const signaturePattern1 = /\|\s*([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/
+    const sig1Match = actualContent.match(signaturePattern1)
+    if (sig1Match) return sig1Match[1]
+
+    // Pattern 2: Email в <mailto:...> тегу (часто в підписах)
+    const mailtoPattern = /mailto:([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i
+    const mailtoMatch = actualContent.match(mailtoPattern)
+    if (mailtoMatch) return mailtoMatch[1]
+
+    // Pattern 3: Email біля імені в кінці (підпис)
+    // Шукаємо ОСТАННІЙ email в actualContent (найімовірніше це підпис)
+    const allEmailsPattern = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g
+    const allEmails = actualContent.match(allEmailsPattern)
+    if (allEmails && allEmails.length > 0) {
+      // Повертаємо ОСТАННІЙ знайдений email (найімовірніше з підпису)
+      return allEmails[allEmails.length - 1]
+    }
 
     return ''
   }
