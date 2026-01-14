@@ -14,4 +14,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   fetchJiraIssues: options => ipcRenderer.invoke('fetch-jira-issues', options),
   exportToJira: options => ipcRenderer.invoke('export-to-jira', options),
   onJiraProgress: callback => ipcRenderer.on('jira-export-progress', (event, data) => callback(data)),
+  // Cache functions
+  saveToCache: options => ipcRenderer.invoke('save-to-cache', options),
+  listCacheFiles: () => ipcRenderer.invoke('list-cache-files'),
+  loadFromCache: fileName => ipcRenderer.invoke('load-from-cache', fileName),
+  deleteCacheFile: fileName => ipcRenderer.invoke('delete-cache-file', fileName),
+  clearAllCache: () => ipcRenderer.invoke('clear-all-cache'),
+  getCacheStats: () => ipcRenderer.invoke('get-cache-stats'),
 })

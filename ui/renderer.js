@@ -97,6 +97,13 @@ function setupEventListeners() {
   // Jira
   document.getElementById('connect-jira-btn').addEventListener('click', connectJira)
 
+  // Cache
+  document.getElementById('manage-cache-btn').addEventListener('click', showCacheModal)
+  document.getElementById('close-cache-modal').addEventListener('click', closeCacheModal)
+  document.getElementById('close-cache-modal-btn').addEventListener('click', closeCacheModal)
+  document.getElementById('refresh-cache-list-btn').addEventListener('click', loadCacheList)
+  document.getElementById('clear-all-cache-btn').addEventListener('click', clearAllCache)
+
   // Парсинг
   parseBtn.addEventListener('click', startParsing)
 
@@ -509,7 +516,33 @@ async function parseGraph() {
   }
 
   console.log(`Парсинг з Graph API: ${selectedGraphFolders.length} папок`)
-  return await window.electronAPI.parseGraph(options)
+  const result = await window.electronAPI.parseGraph(options)
+
+  // Перевіряємо чи потрібно зберегти в кеш
+  if (result.success && document.getElementById('save-to-cache-checkbox').checked) {
+    try {
+      console.log('Збереження в кеш...')
+      const cacheResult = await window.electronAPI.saveToCache({
+        source: 'graph-api',
+        data: result.data,
+        startDate: options.startDate,
+        endDate: options.endDate,
+        folders: options.folders,
+        supportEmails: options.supportEmails,
+        keywords: options.keywords,
+      })
+
+      if (cacheResult.success) {
+        console.log(`✅ Збережено ${cacheResult.messageCount} листів в кеш: ${cacheResult.fileName}`)
+        alert(`✅ Дані збережено в кеш!\nФайл: ${cacheResult.fileName}\nЛистів: ${cacheResult.messageCount}`)
+      }
+    } catch (error) {
+      console.error('Помилка збереження в кеш:', error)
+      // Не переривуємо процес, просто логуємо помилку
+    }
+  }
+
+  return result
 }
 
 async function parseJira() {
@@ -919,6 +952,200 @@ function updateSortIndicators() {
     if (activeHeader) {
       activeHeader.classList.add(`sort-${currentSort.direction}`)
     }
+  }
+}
+
+// ============================================
+// Cache Management
+// ============================================
+
+async function showCacheModal() {
+  const modal = document.getElementById('cache-modal')
+  modal.style.display = 'flex'
+
+  await loadCacheStats()
+  await loadCacheList()
+}
+
+function closeCacheModal() {
+  const modal = document.getElementById('cache-modal')
+  modal.style.display = 'none'
+}
+
+async function loadCacheStats() {
+  try {
+    const result = await window.electronAPI.getCacheStats()
+
+    if (result.success && result.stats) {
+      const stats = result.stats
+      document.getElementById('cache-stats-content').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+          <div>
+            <div style="font-size: 12px; color: #6b7280;">Файлів кешу</div>
+            <div style="font-size: 20px; font-weight: 600; color: #667eea;">${stats.totalFiles}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: #6b7280;">Загальний розмір</div>
+            <div style="font-size: 20px; font-weight: 600; color: #667eea;">${stats.totalSizeFormatted}</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: #6b7280;">Всього листів</div>
+            <div style="font-size: 20px; font-weight: 600; color: #667eea;">${stats.totalMessages}</div>
+          </div>
+        </div>
+      `
+    }
+  } catch (error) {
+    console.error('Failed to load cache stats:', error)
+  }
+}
+
+async function loadCacheList() {
+  const loadingDiv = document.getElementById('cache-loading')
+  const listDiv = document.getElementById('cache-files-list')
+
+  loadingDiv.style.display = 'block'
+  listDiv.innerHTML = ''
+
+  try {
+    const result = await window.electronAPI.listCacheFiles()
+
+    if (result.success && result.files.length > 0) {
+      listDiv.innerHTML = result.files.map(file => `
+        <div class="cache-file-item">
+          <div class="cache-file-info">
+            <div class="cache-file-name">${file.source.toUpperCase()} - ${formatCacheDate(file.cachedAt)}</div>
+            <div class="cache-file-meta">
+              <span>📅 ${formatDateRange(file.dateRange)}</span>
+              <span>📊 ${file.messageCount} листів</span>
+              <span>💾 ${file.sizeFormatted}</span>
+              ${file.folders.length > 0 ? `<span>📁 ${file.folders.slice(0, 2).join(', ')}${file.folders.length > 2 ? '...' : ''}</span>` : ''}
+            </div>
+          </div>
+          <div class="cache-file-actions">
+            <button class="btn btn-success btn-small" onclick="loadCachedData('${file.fileName}')">📂 Завантажити</button>
+            <button class="btn btn-danger btn-small" onclick="deleteCachedFile('${file.fileName}')">🗑️</button>
+          </div>
+        </div>
+      `).join('')
+    } else {
+      listDiv.innerHTML = `
+        <div class="cache-empty">
+          <p>📭 Кеш порожній</p>
+          <p>Завантажте дані з Graph API і відмітьте "Зберегти в кеш"</p>
+        </div>
+      `
+    }
+
+    await loadCacheStats()
+  } catch (error) {
+    console.error('Failed to load cache list:', error)
+    listDiv.innerHTML = '<div class="cache-empty"><p>❌ Помилка завантаження кешу</p></div>'
+  } finally {
+    loadingDiv.style.display = 'none'
+  }
+}
+
+function formatCacheDate(dateStr) {
+  const date = new Date(dateStr)
+  return date.toLocaleString('uk-UA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+function formatDateRange(range) {
+  if (!range || (!range.start && !range.end)) return 'Всі дати'
+
+  const start = range.start ? new Date(range.start).toLocaleDateString('uk-UA') : '...'
+  const end = range.end ? new Date(range.end).toLocaleDateString('uk-UA') : '...'
+
+  return `${start} - ${end}`
+}
+
+async function loadCachedData(fileName) {
+  try {
+    loading.style.display = 'block'
+    closeCacheModal()
+
+    const result = await window.electronAPI.loadFromCache(fileName)
+
+    if (result.success) {
+      // Генеруємо звіт з кешованих даних
+      const reportGenerator = {
+        processMessages: (messages) => {
+          // Тут використовуємо той самий код, що і для Graph API
+          return {
+            issues: messages,
+            stats: result.stats || {}
+          }
+        }
+      }
+
+      parsedData = result.data
+      displayResults({
+        success: true,
+        data: result.data,
+        stats: result.stats || {
+          totalThreads: 0,
+          total: result.data.length,
+          resolved: 0,
+          inProgress: result.data.length,
+          avgMessagesPerIssue: 0
+        }
+      })
+
+      alert(`✅ Завантажено ${result.data.length} листів з кешу`)
+    } else {
+      alert('❌ Помилка завантаження з кешу:\n\n' + result.error)
+    }
+  } catch (error) {
+    console.error('Cache load error:', error)
+    alert('❌ Помилка: ' + error.message)
+  } finally {
+    loading.style.display = 'none'
+  }
+}
+
+async function deleteCachedFile(fileName) {
+  if (!confirm(`Видалити файл кешу?\n\n${fileName}`)) {
+    return
+  }
+
+  try {
+    const result = await window.electronAPI.deleteCacheFile(fileName)
+
+    if (result.success) {
+      await loadCacheList()
+    } else {
+      alert('❌ Помилка видалення: ' + result.error)
+    }
+  } catch (error) {
+    console.error('Delete cache error:', error)
+    alert('❌ Помилка: ' + error.message)
+  }
+}
+
+async function clearAllCache() {
+  if (!confirm('Видалити весь кеш?\n\nЦю дію не можна скасувати.')) {
+    return
+  }
+
+  try {
+    const result = await window.electronAPI.clearAllCache()
+
+    if (result.success) {
+      alert(`✅ Видалено ${result.deletedCount} файлів`)
+      await loadCacheList()
+    } else {
+      alert('❌ Помилка: ' + result.error)
+    }
+  } catch (error) {
+    console.error('Clear cache error:', error)
+    alert('❌ Помилка: ' + error.message)
   }
 }
 

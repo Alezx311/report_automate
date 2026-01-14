@@ -2,7 +2,6 @@ const axios = require('axios')
 
 /**
  * GraphApiParser - парсер для роботи з Microsoft Graph API
- * Базується на коді з TgBot/mail_reader.py
  */
 class GraphApiParser {
   constructor(config) {
@@ -45,7 +44,7 @@ class GraphApiParser {
 
       this.token = response.data.access_token
       // expires_in вказується в секундах
-      this.tokenExpiry = Date.now() + (response.data.expires_in * 1000)
+      this.tokenExpiry = Date.now() + response.data.expires_in * 1000
 
       return this.token
     } catch (error) {
@@ -315,7 +314,7 @@ class GraphApiParser {
           'Content-Type': 'application/json',
         },
         timeout: 10000,
-      }
+      },
     )
   }
 
@@ -325,16 +324,13 @@ class GraphApiParser {
   async getMessageBodyHtml(messageId) {
     const token = await this.getToken()
 
-    const response = await axios.get(
-      `https://graph.microsoft.com/v1.0/me/messages/${messageId}?$select=body`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        timeout: 10000,
-      }
-    )
+    const response = await axios.get(`https://graph.microsoft.com/v1.0/me/messages/${messageId}?$select=body`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      timeout: 10000,
+    })
 
     const body = response.data.body || {}
 

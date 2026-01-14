@@ -986,3 +986,68 @@ tbody tr:hover {
   border-radius: 4px;
   line-height: 1.5;
 }
+
+/* Cache Management */
+.cache-files-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
+.cache-file-item {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.cache-file-item:hover {
+  background: #f9fafb;
+}
+
+.cache-file-item:last-child {
+  border-bottom: none;
+}
+
+.cache-file-info {
+  flex: 1;
+}
+
+.cache-file-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.cache-file-meta {
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.cache-file-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cache-file-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cache-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+}
+
+.cache-empty p {
+  margin: 10px 0;
+  font-size: 14px;
+}

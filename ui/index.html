@@ -84,6 +84,16 @@
             <strong>Вибрані папки:</strong>
             <ul id="selected-graph-folders-list"></ul>
           </div>
+          <div class="form-group" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <label>
+              <input type="checkbox" id="save-to-cache-checkbox" />
+              <span>💾 Зберегти дані в кеш для offline роботи</span>
+            </label>
+            <div class="help-text">
+              Після завантаження листи будуть збережені локально. Ви зможете працювати з ними без підключення до інтернету.
+            </div>
+          </div>
+          <button id="manage-cache-btn" class="btn btn-secondary" style="margin-top: 10px;">📦 Управління кешем</button>
         </div>
 
         <!-- Jira Панель -->
@@ -247,6 +257,34 @@
         <div class="modal-footer">
           <button id="cancel-folders-btn" class="btn btn-secondary">Скасувати</button>
           <button id="confirm-folders-btn" class="btn btn-success">Підтвердити вибір</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно управління кешем -->
+    <div id="cache-modal" class="modal" style="display: none">
+      <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header">
+          <h2>📦 Управління кешем</h2>
+          <button id="close-cache-modal" class="btn-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div id="cache-stats" style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+            <strong>Статистика:</strong>
+            <div id="cache-stats-content" style="margin-top: 10px;">Завантаження...</div>
+          </div>
+          <div style="margin-bottom: 15px;">
+            <button id="refresh-cache-list-btn" class="btn btn-primary btn-small">🔄 Оновити</button>
+            <button id="clear-all-cache-btn" class="btn btn-danger btn-small">🗑️ Очистити весь кеш</button>
+          </div>
+          <div id="cache-loading" style="display: none; text-align: center; padding: 20px;">
+            <div class="spinner-small"></div>
+            <p>Завантаження списку кешу...</p>
+          </div>
+          <div id="cache-files-list" class="cache-files-list"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="close-cache-modal-btn" class="btn btn-secondary">Закрити</button>
         </div>
       </div>
     </div>

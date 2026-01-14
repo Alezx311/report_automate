@@ -8,6 +8,7 @@ const PSTParser = require('./src/parsers/pstParser')
 const GraphApiParser = require('./src/parsers/graphApiParser')
 const JiraClient = require('./src/integrations/jiraClient')
 const ReportGenerator = require('./src/processors/reportGenerator')
+const CacheManager = require('./src/utils/cacheManager')
 
 let mainWindow
 
@@ -406,6 +407,119 @@ ipcMain.handle('load-config', async () => {
     return {
       success: false,
       error: error.message,
+    }
+  }
+})
+
+// ============================================
+// Cache Management
+// ============================================
+
+const cacheManager = new CacheManager()
+
+// Ініціалізація кешу при запуску
+app.whenReady().then(async () => {
+  await cacheManager.initialize()
+})
+
+// Збереження даних в кеш
+ipcMain.handle('save-to-cache', async (event, options) => {
+  try {
+    console.log('Saving data to cache...')
+
+    const result = await cacheManager.saveToCache(options.source, options.data, {
+      startDate: options.startDate,
+      endDate: options.endDate,
+      folders: options.folders,
+      supportEmails: options.supportEmails,
+      keywords: options.keywords,
+    })
+
+    return result
+  } catch (error) {
+    console.error('Cache save error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// Отримання списку кешованих файлів
+ipcMain.handle('list-cache-files', async () => {
+  try {
+    const files = await cacheManager.listCachedFiles()
+    return {
+      success: true,
+      files,
+    }
+  } catch (error) {
+    console.error('List cache error:', error)
+    return {
+      success: false,
+      error: error.message,
+      files: [],
+    }
+  }
+})
+
+// Завантаження даних з кешу
+ipcMain.handle('load-from-cache', async (event, fileName) => {
+  try {
+    console.log('Loading from cache:', fileName)
+    const result = await cacheManager.loadFromCache(fileName)
+    return result
+  } catch (error) {
+    console.error('Cache load error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// Видалення файлу з кешу
+ipcMain.handle('delete-cache-file', async (event, fileName) => {
+  try {
+    const result = await cacheManager.deleteCache(fileName)
+    return result
+  } catch (error) {
+    console.error('Cache delete error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// Очищення всього кешу
+ipcMain.handle('clear-all-cache', async () => {
+  try {
+    const result = await cacheManager.clearAllCache()
+    return result
+  } catch (error) {
+    console.error('Cache clear error:', error)
+    return {
+      success: false,
+      error: error.message,
+    }
+  }
+})
+
+// Статистика кешу
+ipcMain.handle('get-cache-stats', async () => {
+  try {
+    const stats = await cacheManager.getCacheStats()
+    return {
+      success: true,
+      stats,
+    }
+  } catch (error) {
+    console.error('Cache stats error:', error)
+    return {
+      success: false,
+      error: error.message,
+      stats: null,
     }
   }
 })
